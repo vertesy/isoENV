@@ -79,6 +79,50 @@ sourceScriptAndPassFunctions <- function(scriptPath) {
 
 
 # ______________________________________________________________________________________________----
-# Section 3  ----
+# Helpers  ----
 # ____________________________________________________________________
 
+#' Check Variables in an Environment
+#'
+#' This function iterates over a list of variable names and checks their
+#' existence and value in a given environment. It issues warnings for variables
+#' that are missing, NULL, NA, NaN, infinite, or empty, and sends a message for
+#' variables that are defined and not empty.
+#'
+#' @param output.variables A character vector of variable names to check.
+#' @param envir The environment in which to look for the variables.
+#' @return No return value, called for side effects.
+#' @examples
+#' myEnv <- new.env()
+#' myEnv$aaa <- 111
+#' myEnv$xxx <- NULL
+#' myEnv$yyy <- list()
+#' myEnv$zzz <- numeric()
+#' output.variables <- c('aaa','xxx', 'zzz', 'yyy', 'bbb')
+#' checkVars(output.variables, envir = myEnv)
+#' @export
+checkVars <- function(output.variables, envir) {
+
+  stopifnot(is.character(output.variables), is.environment(envir))
+
+  cat(length(output.variables), "output.variables are checked for content.")
+
+  for (var in output.variables) {
+    value <- envir[[var]]
+    if (!exists(var, envir = envir)) {
+      warning(var, " is missing")
+    } else if (is.null(value)) {
+      warning(var, " is NULL", value)
+    } else if (identical(value, NA)) {
+      warning(var, " is NA: ", value)
+    } else if (length(value) == 0) {
+      warning(var, " is empty")
+    } else if (is.nan(value)) {
+      warning(var, " is NaN: ", value)
+    } else if (is.infinite(value)) {
+      warning(var, " is Inf: ", value)
+    } else {
+      message(var, " is defined and not empty")
+    }
+  }
+}

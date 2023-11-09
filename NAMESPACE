@@ -2,4 +2,4 @@
 
 export(checkVars)
 export(removeAllExceptFunctions)
-export(sourceScriptAndPassFunctions)
+export(sourceStrict)

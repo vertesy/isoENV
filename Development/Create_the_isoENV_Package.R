@@ -108,7 +108,8 @@ check(RepositoryDir, cran = TRUE)
   # clipr::write_clip(p.dep.new)
 }
 
-{
+if (F) {
+  "run only once when initializing the repo"
   usethis::use_testthat(edition = 3)
   use_test(name = fname)
   # use_test(name = NULL, open = rlang::is_interactive())

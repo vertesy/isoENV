@@ -79,7 +79,7 @@ sourceScriptAndPassFunctions <- function(scriptPath) {
 
 
 # ______________________________________________________________________________________________----
-# Helpers  ----
+# 3. Helpers  ----
 # ____________________________________________________________________
 
 #' Check Variables in an Environment
@@ -89,8 +89,10 @@ sourceScriptAndPassFunctions <- function(scriptPath) {
 #' that are missing, NULL, NA, NaN, infinite, or empty, and sends a message for
 #' variables that are defined and not empty.
 #'
-#' @param output.variables A character vector of variable names to check.
+#' @param variables A character vector of variable names to check.
 #' @param envir The environment in which to look for the variables.
+#' @param verbose Report on good (passing) variables.
+#' @param suffix Suffix to append to printed summary statment.
 #' @return No return value, called for side effects.
 #' @examples
 #' myEnv <- new.env()
@@ -101,13 +103,13 @@ sourceScriptAndPassFunctions <- function(scriptPath) {
 #' output.variables <- c('aaa','xxx', 'zzz', 'yyy', 'bbb')
 #' checkVars(output.variables, envir = myEnv)
 #' @export
-checkVars <- function(output.variables, envir) {
+checkVars <- function(variables, envir, verbose = F, suffix = NULL) {
 
-  stopifnot(is.character(output.variables), is.environment(envir))
+  stopifnot(is.character(variables), is.environment(envir))
 
-  cat(length(output.variables), "output.variables are checked for content.")
+  cat(length(variables), substitute(variables), "are checked for content:", variables, suffix, "\n")
 
-  for (var in output.variables) {
+  for (var in variables) {
     value <- envir[[var]]
     if (!exists(var, envir = envir)) {
       warning(var, " is missing")
@@ -121,8 +123,13 @@ checkVars <- function(output.variables, envir) {
       warning(var, " is NaN: ", value)
     } else if (is.infinite(value)) {
       warning(var, " is Inf: ", value)
-    } else {
+    } else if (verbose) {
       message(var, " is defined and not empty")
     }
   }
 }
+
+
+# ______________________________________________________________________________________________----
+# 3. Private Helper Functions  ----
+# ____________________________________________________________________

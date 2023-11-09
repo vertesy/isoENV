@@ -4,12 +4,16 @@
 \alias{checkVars}
 \title{Check Variables in an Environment}
 \usage{
-checkVars(output.variables, envir)
+checkVars(variables, envir, verbose = F, suffix = NULL)
 }
 \arguments{
-\item{output.variables}{A character vector of variable names to check.}
+\item{variables}{A character vector of variable names to check.}
 
 \item{envir}{The environment in which to look for the variables.}
+
+\item{verbose}{Report on good (passing) variables.}
+
+\item{suffix}{Suffix to append to printed summary statment.}
 }
 \value{
 No return value, called for side effects.

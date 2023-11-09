@@ -12,5 +12,5 @@ library(isoENV)
 test_check("isoENV")
 
 
+test_file(path = "~/GitHub/Packages/isoENV/tests/testthat/test-isoENV.R")
 # Run the tests
-test_file("tests/testthat/test-isoENV.R")

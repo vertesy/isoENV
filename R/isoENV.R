@@ -44,30 +44,100 @@ removeAllExceptFunctions <- function(envir = .GlobalEnv) {
 
 }
 
+
+
 # ________________________________________________________________________________________________
-#' Source Script in a New Environment and Pass Functions
+#' Source a script with strict environment control
 #'
-#' This function creates a new environment with the base environment as its parent,
-#' sources an R script into this new environment, and then copies all functions
-#' from the global environment to the new environment.
+#' This function sources a script file into a new environment. It can selectively import variables
+#' and functions from the global environment and return specified variables back to the global environment.
 #'
-#' @param scriptPath The path to the R script that should be sourced.
-#' @return A new environment containing the sourced script and copied functions.
+#' @param path The file path of the R script to be sourced.
+#' @param input.variables A character vector of global variable names to be passed on.
+#' @param output.variables A character vector of variable names from the sourced environment to be returned to the global environment.
+#' @param passAllFunctions Logical; if TRUE, all global functions are passed on, otherwise only those in input.functions.
+#' @param input.functions A character vector of global function names to be passed on if passAllFunctions is FALSE.
+#' @param assignEnv Logical; if TRUE, assigns the new environment to the global environment.
+#' @return No return value, the function returns variables into the .GlobalEnv.
 #' @export
 #' @examples
 #' \dontrun{
-#'   myEnv <- sourceScriptAndPassFunctions('~/path/to/script.R')
+#'   sourceStrict(path = "path/to/your/script.R",
+#'                input.variables = c("x"),
+#'                output.variables = c("res"),
+#'                passAllFunctions = TRUE,
+#'                input.functions = NULL,
+#'                assignEnv = TRUE)
 #' }
-sourceScriptAndPassFunctions <- function(scriptPath) {
+sourceStrict <- function(path, input.variables, output.variables
+                         , passAllFunctions = TRUE, input.functions = NULL
+                         , assignEnv = TRUE) {
+
+  # Argument assertions
+  stopifnot(
+    is.character(path),
+    is.character(input.variables),
+    is.character(output.variables),
+    "Either passAllFunctions OR give a character of fun names" =
+      passAllFunctions || is.character(input.functions)
+  )
+  script_name <- basename(path)
+
+  checkVars(input.variables, envir =  globalenv())
+
+  # Create new environment that does not see .GlobalEnv (not it's parent)/
   myEnv <- new.env(parent = baseenv())
-  source(file = scriptPath, local = myEnv)
 
-  # Identify and copy functions from the global environment to myEnv
-  globalFunctions <- lsf.str(envir = .GlobalEnv)
-  list2env(mget(globalFunctions, .GlobalEnv), envir = myEnv)
+  # Copy specified global variables to myEnv
+  vars <- mget(input.variables, .GlobalEnv, ifnotfound = NA)
+  vars <- Filter(Negate(is.na), vars)
+  list2env(vars, envir = myEnv)
 
-  return(myEnv)
+  # Depending on the flag, either pass all functions or only specified ones
+  if (passAllFunctions) {
+    globalFunctions <- lsf.str(envir = .GlobalEnv)
+  } else {
+    if (is.null(input.functions) || length(input.functions) == 0) {
+      stop("input.functions must be provided if passAllFunctions is FALSE")
+    }
+    globalFunctions <- input.functions
+  }
+
+  # Copy functions from the global environment to myEnv
+  functionsToPass <- mget(globalFunctions, .GlobalEnv, ifnotfound = NA)
+  functionsToPass <- Filter(Negate(is.na), functionsToPass)
+  list2env(functionsToPass, envir = myEnv)
+
+  # Source the script in myEnv
+  source(file = path, local = myEnv)
+
+  # After sourcing, check if all output variables can be found in myEnv
+  checkmate::assertSubset(output.variables, ls(envir = myEnv),
+                          add = "Not all of the output.variables were found to be returned.")
+
+  # Warn if any of the output variables are NULL, NA, or empty
+
+  if (any(sapply(output.variables, function(x) checkmate::anyMissing(mget(x, envir = myEnv))))) {
+    warning("Some of the output.variables are NULL, NA, or empty.")
+  }
+
+  # outputVars <- mget(output.variables, envir = myEnv, ifnotfound = NA)
+  checkVars(output.variables, envir =  myEnv)
+  cat(">> Returning:", output.variables, 'from', script_name, '\n')
+
+  # Copy specified myEnv variables back to .GlobalEnv
+  varsOut <- mget(output.variables, envir = myEnv, ifnotfound = NA)
+  varsOut <- Filter(Negate(is.na), varsOut)
+  list2env(varsOut, envir = .GlobalEnv)
+
+  if (assignEnv) {
+    env.name <- paste0(".env.", script_name)
+    assign(x = env.name, value = myEnv, envir = .GlobalEnv)
+    cat("Script local environment is returned as:", env.name)
+  }
+  # return(myEnv)
 }
+
 
 
 # ______________________________________________________________________________________________----

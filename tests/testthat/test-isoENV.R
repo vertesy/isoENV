@@ -1,5 +1,6 @@
+print('Test started')
 rm(list = ls(all.names = TRUE))
-library(testthat); print('')
+library(testthat); library(checkmate); print('')
 
 # removeAllExceptFunctions -------------------------------------------------------------------------
 
@@ -43,7 +44,6 @@ test_that("Variables are removed from specified environment", {
 
 
 print('checkVars 1')
-
 test_that("checkVars does not issue a message for defined variables", {
 
   {
@@ -60,6 +60,7 @@ test_that("checkVars does not issue a message for defined variables", {
 
   # Capture the message
   # expect_message(isoENV::checkVars(output_variables, test_env), "var_defined is defined and not empty")
+  expect_null(isoENV::checkVars(output_variables, test_env), "var_defined is defined and not empty - thus NULL is returned")
 
   # Clean up
   rm(test_env)
@@ -94,7 +95,48 @@ test_that("checkVars does not issue a message for defined variables", {
 
 # rm('test_env')
 
-# xxx -------------------------------------------------------------------------
+# sourceStrict -------------------------------------------------------------------------
+
+# Assume we have a script that squares an input variable 'x' and stores it in 'res'.
+script_path <- tempfile()
+writeLines("res <- x^2", con = script_path)
+
+# Unit Test 1: Test sourcing with input and output variables
+print('sourceStrict 1')
+test_that("sourceStrict sources correctly with input and output variables", {
+  x <- 4  # Define a global variable
+  sourceStrict(path = script_path,
+               input.variables = c("x"),
+               output.variables = c("res"),
+               passAllFunctions = TRUE,
+               assignEnv = FALSE)
+
+  expect_equal(res, 16)
+  # Clean up
+  rm(res, envir = .GlobalEnv)
+}); print('')
+
+# Unit Test 2: Test sourcing without passing all functions
+print('sourceStrict 2')
+test_that("sourceStrict doesn't pass all functions when specified", {
+  # Define a dummy function in the global environment
+  dummy_func <- function() TRUE
+  sourceStrict(path = script_path,
+               input.variables = c("x"),
+               output.variables = c("res"),
+               passAllFunctions = FALSE,
+               input.functions = 'a',  # Intentionally not passing dummy_func
+               assignEnv = TRUE)
+
+  # Test the new environment does not contain dummy_func
+
+  result_env_name <- paste0(".env.", basename(script_path))
+  expect_false(exists("dummy_func", envir = get(result_env_name)))
+  # Clean up
+  # rm(list = c("dummy_func", result_env_name))
+}); print('')
+
+# More tests can be added to cover all branches and possible edge cases.
 
 
 

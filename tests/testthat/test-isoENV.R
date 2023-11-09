@@ -11,13 +11,17 @@ test_that("Functions are not removed", {
   isoENV::removeAllExceptFunctions(envir = environment())
 
   print(ls())
-  expect_true(exists("f", envir = environment()))
-  expect_true(exists("g", envir = environment()))
-  expect_false(exists("x", envir = environment()))
+  # expect_true(exists("f", envir = .GlobalEnv))
+  # expect_true(exists("g", envir = .GlobalEnv))
+  # expect_false(exists("x", envir = .GlobalEnv))
+  expect_true(exists("f", envir = environment() ))
+  expect_true(exists("g", envir = environment() ))
+  expect_false(exists("x", envir = environment() ))
 
   # Clean up
-  rm(f, g)
+  rm(list = c("f", "g"), envir = environment())
 })
+
 
 # Test that it works on a specified environment
 test_that("Variables are removed from specified environment", {

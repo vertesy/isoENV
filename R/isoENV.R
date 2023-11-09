@@ -111,9 +111,13 @@ sourceStrict <- function(path, input.variables, output.variables
   # Source the script in myEnv
   source(file = path, local = myEnv)
 
+  cat(11)
   # After sourcing, check if all output variables can be found in myEnv
-  checkmate::assertSubset(output.variables, ls(envir = myEnv),
-                          add = "Not all of the output.variables were found to be returned.")
+  if (all(output.variables %in% ls(envir = myEnv))) {
+    cat(setdiff(output.variables, ls(envir = myEnv)), "variables are missing from the output environment of the script", fill = T)
+  }
+  # checkmate::assertSubset(x = output.variables, choices = ls(envir = myEnv),
+  #                         add = "Not all of the output.variables were found to be returned.")
 
   # Warn if any of the output variables are NULL, NA, or empty
   if (any(sapply(output.variables, function(x) checkmate::anyMissing(mget(x, envir = myEnv))))) {

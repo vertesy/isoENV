@@ -105,7 +105,7 @@ sourceStrict <- function(path, input.variables, output.variables
 
   # Copy functions from the global environment to myEnv
   functionsToPass <- mget(globalFunctions, .GlobalEnv, ifnotfound = NA)
-  functionsToPass <- Filter(Negate(is.na), functionsToPass)
+  # functionsToPass <- Filter(Negate(is.na), functionsToPass)
   list2env(functionsToPass, envir = myEnv)
 
   # Source the script in myEnv
@@ -116,12 +116,10 @@ sourceStrict <- function(path, input.variables, output.variables
                           add = "Not all of the output.variables were found to be returned.")
 
   # Warn if any of the output variables are NULL, NA, or empty
-
   if (any(sapply(output.variables, function(x) checkmate::anyMissing(mget(x, envir = myEnv))))) {
     warning("Some of the output.variables are NULL, NA, or empty.")
   }
 
-  # outputVars <- mget(output.variables, envir = myEnv, ifnotfound = NA)
   checkVars(output.variables, envir =  myEnv)
   cat(">> Returning:", output.variables, 'from', script_name, '\n')
 
@@ -133,7 +131,7 @@ sourceStrict <- function(path, input.variables, output.variables
   if (assignEnv) {
     env.name <- paste0(".env.", script_name)
     assign(x = env.name, value = myEnv, envir = .GlobalEnv)
-    cat("Script local environment is returned as:", env.name)
+    cat("Script local environment is returned as:", env.name, '\n')
   }
   # return(myEnv)
 }

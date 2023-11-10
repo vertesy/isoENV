@@ -10,7 +10,7 @@
 
 ## Intro
 
-The `isoENV` R package provides a robust framework for executing scripts within isolated environments. This capability allows users to define specific inputs and outputs to these environments, making workflows cleaner and more robust.
+The `isoENV` R package aims to provide a robust framework for executing scripts within isolated environments. This capability allows users to define specific inputs and outputs to these environments, making workflows cleaner and more robust.
 
 In essence, this allows you to emulate a classic (bioinformatics) pipeline, with defined in- and outputs to each tool (script), ***within a single R session***. 
 

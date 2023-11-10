@@ -127,7 +127,7 @@ source("https://raw.githubusercontent.com/vertesy/UVI.tools/main/R/UVI.tools.R")
 ## Usage
 
 ```r
-# mother.script.R
+# 01.Global.R
 devtools::load_all("~/GitHub/Packages/isoENV");
 
 # Define some stuff

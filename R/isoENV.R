@@ -37,7 +37,7 @@
 #' }
 sourceClean <- function(path, input.variables, output.variables
                         , passAllFunctions = TRUE, input.functions = NULL
-                        , returnEnv = TRUE
+                        , returnEnv = TRUE, removeBigObjs = TRUE, max.size = 1e6
                         , ...) {
 
   # Argument assertions
@@ -121,6 +121,8 @@ sourceClean <- function(path, input.variables, output.variables
 
   if (returnEnv) {
     env.name <- paste0(".env.", script_name)
+    if (removeBigObjs) myEnv <- isoENV::.removeBigObjsFromEnv(myEnv, max.size = max.size)
+
     assign(x = env.name, value = myEnv, envir = .GlobalEnv)
     cat(">> Script local environment is returned as:", env.name, '\n')
   }
@@ -248,5 +250,63 @@ checkVars <- function(variables, envir, verbose = F
 
   return(VarNames)
 }
+
+
+
+# ____________________________________________________________________
+#' Remove large objects from an environment
+#'
+#' This function removes objects from the specified environment that exceed a certain size.
+#' @param env an environment from which large objects should be removed.
+#' @param max.size a numeric value specifying the size threshold in bytes.
+#' @return The modified environment with large objects removed.
+#' @examples
+#' env <- new.env()
+#' env$a <- rnorm(1e7)
+#' env$b <- 1
+#' # Get the names and sizes of the objects in env
+#' obj_names <- ls(envir = env)
+#' obj_sizes <- sapply(obj_names, function(x) object.size(get(x, envir = env)))
+#' env <- removeBigObjsFromEnv(env, max.size = 1e6)
+#' ls(env) # should not include 'a'
+#' @export
+
+.removeBigObjsFromEnv <- function(env, max.size = 1e6) {
+
+  # Assertions for input arguments
+  stopifnot(is.environment(env))
+  stopifnot(is.numeric(max.size) && max.size > 0)
+
+  # Get the names and sizes of the objects in env
+  obj_names <- ls(envir = env)
+  obj_sizes <- sapply(obj_names, function(x) object.size(get(x, envir = env)))
+
+  # Filter the names of the objects that are bigger than max.size
+  big_objs <- obj_names[obj_sizes > max.size]
+
+  # Remove the big objects from env
+  rm(list = big_objs, envir = env)
+
+  # Warn the user about the names of the objects that were removed
+  if (length(big_objs) > 0) {
+    warning(paste("Objects were bigger than and",
+                  format(max.size, scientific = FALSE, big.mark = ","), "bytes are removed from",
+                  substitute(env), "\n",
+                  paste(big_objs, collapse = ", ")))
+  }
+
+  # Return the modified environment
+  return(env)
+
+  # Output assertion
+  stopifnot(is.environment(env))
+  return(env)
+}
+
+
+# ____________________________________________________________________
+
+
+# ____________________________________________________________________
 
 

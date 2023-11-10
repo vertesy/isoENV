@@ -10,7 +10,8 @@ sourceClean(
   output.variables,
   passAllFunctions = TRUE,
   input.functions = NULL,
-  returnEnv = TRUE
+  returnEnv = TRUE,
+  ...
 )
 }
 \arguments{
@@ -25,6 +26,8 @@ sourceClean(
 \item{input.functions}{A character vector of global function names to be passed on if passAllFunctions is FALSE.}
 
 \item{returnEnv}{Logical; if TRUE, assigns the new environment to the global environment.}
+
+\item{...}{Arguments to pass on to source()}
 }
 \value{
 No return value, the function returns variables into the .GlobalEnv.

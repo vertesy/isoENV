@@ -22,7 +22,8 @@
 #' @param output.variables A character vector of variable names from the sourced environment to be returned to the global environment.
 #' @param passAllFunctions Logical; if TRUE, all global functions are passed on, otherwise only those in input.functions.
 #' @param input.functions A character vector of global function names to be passed on if passAllFunctions is FALSE.
-#' @param assignEnv Logical; if TRUE, assigns the new environment to the global environment.
+#' @param returnEnv Logical; if TRUE, assigns the new environment to the global environment.
+#' @param ... Arguments to pass on to source()
 #' @return No return value, the function returns variables into the .GlobalEnv.
 #' @export
 #' @examples
@@ -32,11 +33,12 @@
 #'                output.variables = c("res"),
 #'                passAllFunctions = TRUE,
 #'                input.functions = NULL,
-#'                assignEnv = TRUE)
+#'                returnEnv = TRUE)
 #' }
 sourceClean <- function(path, input.variables, output.variables
-                         , passAllFunctions = TRUE, input.functions = NULL
-                         , assignEnv = TRUE) {
+                        , passAllFunctions = TRUE, input.functions = NULL
+                        , returnEnv = TRUE
+                        , ...) {
 
   # Argument assertions
   stopifnot(
@@ -48,7 +50,15 @@ sourceClean <- function(path, input.variables, output.variables
   )
   script_name <- basename(path)
 
-  checkVars(input.variables, envir =  globalenv())
+  # ________________________________________________________________________________________________
+  # Input Variables ----
+
+  objects.existing <- checkVars(input.variables, envir =  globalenv(), prefix = "Problematic INPUT!\n")
+  obj.is.function <- sapply(objects.existing, function(x) is.function(get(x, envir = .GlobalEnv)))
+  if(any(obj.is.function )) {
+    xm <- cat("FUNCTIONS passed to input.variables:", objects.existing[obj.is.function]
+              , '\nSkipped.\n')
+  }
 
   # Create new environment that does not see .GlobalEnv (not it's parent)/
   myEnv <- new.env(parent = baseenv())
@@ -58,53 +68,64 @@ sourceClean <- function(path, input.variables, output.variables
   vars <- Filter(Negate(is.na), vars)
   list2env(vars, envir = myEnv)
 
+  # ________________________________________________________________________________________________
+  # Input Functions ----
+
   # Depending on the flag, either pass all functions or only specified ones
-  if (passAllFunctions) {
-    globalFunctions <- lsf.str(envir = .GlobalEnv)
-  } else {
-    if (is.null(input.functions) || length(input.functions) == 0) {
+  if (isFALSE(passAllFunctions)) {
+    if (length(input.functions) == 0) {
       stop("input.functions must be provided if passAllFunctions is FALSE")
+    } else {
+      if(checkmate::anyMissing(input.functions)) warning("Missing function!\n", immediate. = T)
+      objects.existing <- checkVars(input.functions, envir =  globalenv(), prefix = "Missing FUNCTIONS!\n")
+      obj.is.function <- sapply(objects.existing, function(x) is.function(get(x, envir = .GlobalEnv)))
+
+      if(any(!obj.is.function )) {
+        xm <- cat("Non-FUNCTIONS passed to input.functions:", objects.existing[!obj.is.function]
+                  , '\nSkipped.\n')
+      }
+      input.functions <- objects.existing[obj.is.function]
     }
-    globalFunctions <- input.functions
   }
 
+  functions2pass <-
+    if (passAllFunctions) {
+      lsf.str(envir = .GlobalEnv)
+    } else {
+      input.functions
+    }
+
   # Copy functions from the global environment to myEnv
-  functionsToPass <- mget(globalFunctions, .GlobalEnv, ifnotfound = NA)
+  functionsToPass <- mget(functions2pass, .GlobalEnv, ifnotfound = NA)
   # functionsToPass <- Filter(Negate(is.na), functionsToPass)
   list2env(functionsToPass, envir = myEnv)
 
+  # ________________________________________________________________________________________________
   # Source the script in myEnv
-  source(file = path, local = myEnv)
+  source(file = path, local = myEnv, ...)
 
-  cat(11)
-  # After sourcing, check if all output variables can be found in myEnv
-  if (all(output.variables %in% ls(envir = myEnv))) {
-    cat(setdiff(output.variables, ls(envir = myEnv)), "variables are missing from the output environment of the script", fill = T)
-  }
-  # checkmate::assertSubset(x = output.variables, choices = ls(envir = myEnv),
-  #                         add = "Not all of the output.variables were found to be returned.")
 
-  # Warn if any of the output variables are NULL, NA, or empty
-  if (any(sapply(output.variables, function(x) checkmate::anyMissing(mget(x, envir = myEnv))))) {
-    warning("Some of the output.variables are NULL, NA, or empty.")
-  }
+  # ________________________________________________________________________________________________
+  # Output Variables ----
+  output.variables.existing <- checkVars(output.variables, envir =  myEnv, prefix = "Problematic OUTPUT!\n")
 
-  checkVars(output.variables, envir =  myEnv)
-  cat(">> Returning:", output.variables, 'from', script_name, '\n')
+  # ________________________________________________________________________________________________
+  # Output Functions ----
+  "Output Functions are not checked atm."
 
   # Copy specified myEnv variables back to .GlobalEnv
-  varsOut <- mget(output.variables, envir = myEnv, ifnotfound = NA)
+  varsOut <- mget(output.variables.existing, envir = myEnv, ifnotfound = NA)
   varsOut <- Filter(Negate(is.na), varsOut)
+  cat(">> Returning:", output.variables.existing, 'from', script_name, '\n')
   list2env(varsOut, envir = .GlobalEnv)
 
-  if (assignEnv) {
+  if (returnEnv) {
     env.name <- paste0(".env.", script_name)
     assign(x = env.name, value = myEnv, envir = .GlobalEnv)
-    cat("Script local environment is returned as:", env.name, '\n')
+    cat(">> Script local environment is returned as:", env.name, '\n')
   }
   # return(myEnv)
 }
-
 
 
 
@@ -112,40 +133,7 @@ sourceClean <- function(path, input.variables, output.variables
 # 2. Debugging  ----
 # ____________________________________________________________________
 
-# ______________________________________________________________________________________________----
-#' Remove Non-function Objects
-#'
-#' Removes all objects that are not functions from the specified environment.
-#'
-#' @param env environment from which to remove the variables, defaulting to the global environment.
-#' @return Nothing, but modifies the environment in place.
-#' @examples
-#' # Define some variables and functions in the global environment
-#' x <- 1
-#' y <- "a"
-#' z <- list(1, 2, 3)
-#' f <- function(x) x + 1
-#' g <- function(y) y * 2
-#'
-#' # Check the names of the objects in the global environment
-#' ls()
-#' [1] "f" "g" "x" "y" "z"
-#'
-#' # Remove all objects except functions from the global environment
-#' removeAllExceptFunctions()
-#'
-#' # Check the names of the objects in the global environment again
-#' ls()
-#' [1] "f" "g"
-#' @export
-removeAllExceptFunctions <- function(envir = .GlobalEnv) {
-  to_remove <- setdiff(ls(envir = envir), lsf.str(envir = envir))
-  rm(list = to_remove, envir = envir)
-
-}
-
-
-
+# See: source("~/GitHub/Packages/isoENV/R/isoENV.other.RR")
 
 
 # ______________________________________________________________________________________________----
@@ -173,33 +161,92 @@ removeAllExceptFunctions <- function(envir = .GlobalEnv) {
 #' output.variables <- c('aaa','xxx', 'zzz', 'yyy', 'bbb')
 #' checkVars(output.variables, envir = myEnv)
 #' @export
-checkVars <- function(variables, envir, verbose = F, suffix = NULL) {
+checkVars <- function(variables, envir, verbose = F
+                      , prefix = 'Problematic variables!\n', suffix = NULL) {
 
   stopifnot(is.character(variables), is.environment(envir))
 
-  cat(length(variables), substitute(variables), "are checked for content:", variables, suffix, "\n")
+  # filter out functions that should be returned!
+  # variables <- isoENV:::.filterFunctionsFromObjNames(variables, envir = envir)
 
+  cat("\n--------------------------------------------------------------------------------\n"
+      , length(variables), "variables are checked for content in", substitute(variables), variables, suffix, "\n")
+
+  wasProblem <- FALSE
   for (var in variables) {
-    value <- envir[[var]]
+    # cat("Checking variable:", var, "\n")
     if (!exists(var, envir = envir)) {
-      warning(var, " is missing")
-    } else if (is.null(value)) {
-      warning(var, " is NULL", value)
-    } else if (identical(value, NA)) {
-      warning(var, " is NA: ", value)
-    } else if (length(value) == 0) {
-      warning(var, " is empty")
-    } else if (is.nan(value)) {
-      warning(var, " is NaN: ", value)
-    } else if (is.infinite(value)) {
-      warning(var, " is Inf: ", value)
-    } else if (verbose) {
-      message(var, " is defined and not empty")
+      warning(var, " is missing", immediate. = T); wasProblem <- TRUE
+    } else {
+      value <- get(var, envir = envir)
+      if (is.function(value)) {
+        # cat(var, "is a function, skipping...\n")
+        next
+      } else if (is.null(value)) {
+        warning(var, " is NULL", immediate. = T); wasProblem <- TRUE
+      } else if (identical(value, NA)) {
+        warning(var, " is NA", immediate. = T); wasProblem <- TRUE
+      } else if (length(value) == 0) {
+        warning(var, " is empty", immediate. = T); wasProblem <- TRUE
+      } else if (is.numeric(value) && any(is.nan(value))) {
+        warning(var, " contains NaN values", immediate. = T); wasProblem <- TRUE
+      } else if (is.numeric(value) && any(is.infinite(value))) {
+        warning(var, " contains Inf values", immediate. = T); wasProblem <- TRUE
+      } else if (verbose) {
+        message(var, " is defined and not empty", immediate. = T); wasProblem <- TRUE
+      }
     }
-  }
-}
+  } # for
 
+  if(!is.null(prefix) && wasProblem ) cat(as.character(prefix), fill=T)
+
+  variables.existing <- variables[sapply(variables, exists)]
+  return(variables.existing)
+}
 
 # ______________________________________________________________________________________________----
 # 3. Private Helper Functions  ----
 # ____________________________________________________________________
+
+#' Check Names for Variable or Function Type
+#'
+#' This function takes a character vector of object names and checks whether
+#' they correspond to variables or functions within the provided environment.
+#' It issues warnings for function names and for missing objects, and returns a list of variable names.
+#'
+#' @param names A character vector containing names to check.
+#' @param envir The environment in which to check for names.
+#' @return A character vector of variable names.
+#' @export
+#' @examples
+#' myEnv <- new.env()
+#' myEnv$x <- 4
+#' myEnv$fff <- function(x) x^3
+#' .filterFunctionsFromObjNames(c('x', 'fff'), envir = myEnv)
+
+.filterFunctionsFromObjNames <- function(names, envir) {
+  # Argument assertions
+  stopifnot(is.character(names), is.environment(envir))
+
+  idxFuns <- sapply(names, function(name) {
+    # Check if the object exists in the environment
+    if (!exists(name, envir = envir)) {
+      warning(name, " does not exist in the environment.\n")
+      return(FALSE)
+    }
+    is.function(get(name, envir = envir))
+  })
+
+  FunNames <- names(idxFuns)[idxFuns]
+  VarNames <- names(idxFuns)[!idxFuns]
+
+  if (length(FunNames) > 0) {
+    warning(paste(paste(FunNames, "is a function.\n"), collapse = " "), immediate. = TRUE
+            # , "Only variables are returned: ", paste(VarNames, collapse = ", ")
+            )
+  }
+
+  return(VarNames)
+}
+
+

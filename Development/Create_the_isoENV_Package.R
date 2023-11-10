@@ -13,7 +13,7 @@ require("stringr")
 
 # Setup ------------------------
 PackageName <- "isoENV"
-package.version <- "0.1.0"
+package.version <- "0.1.1"
 setwd("~/GitHub/Packages/")
 
 (RepositoryDir <- paste0("~/GitHub/Packages/", PackageName, "/"))

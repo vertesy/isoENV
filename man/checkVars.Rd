@@ -4,7 +4,13 @@
 \alias{checkVars}
 \title{Check Variables in an Environment}
 \usage{
-checkVars(variables, envir, verbose = F, suffix = NULL)
+checkVars(
+  variables,
+  envir,
+  verbose = F,
+  prefix = "Problematic variables!\\n",
+  suffix = NULL
+)
 }
 \arguments{
 \item{variables}{A character vector of variable names to check.}

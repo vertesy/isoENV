@@ -17,4 +17,5 @@ devtools::load_all("~/GitHub/Packages/isoENV");
 # Run the tests
 test_file(file = "~/GitHub/Packages/isoENV/tests/testthat/test-isoENV.R")
 test_file(file = "~/GitHub/Packages/isoENV/tests/testthat/test2-isoENV.R")
+test_file(file = "~/GitHub/Packages/isoENV/tests/testthat/test-removeBigObjsFromEnv.R")
 

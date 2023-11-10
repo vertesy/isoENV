@@ -1,37 +1,22 @@
-$`character(0)`
-[1] "as_tibble" "save_plot"
-
 $`package:base`
- [1] "as.character" "c"            "cbind"        "colnames"    
- [5] "factor"       "getwd"        "is.null"      "isFALSE"     
- [9] "length"       "make.names"   "max"          "names"       
-[13] "paste"        "paste0"       "print"        "rep"         
-[17] "return"       "round"        "signif"       "substitute"  
-[21] "sum"          "unique"      
+ [1] "all"            "any"            "assign"         "baseenv"        "basename"      
+ [6] "cat"            "exists"         "Filter"         "globalenv"      "identical"     
+[11] "is.character"   "is.environment" "is.infinite"    "is.nan"         "is.null"       
+[16] "length"         "list2env"       "ls"             "message"        "mget"          
+[21] "Negate"         "new.env"        "paste0"         "rm"             "sapply"        
+[26] "setdiff"        "source"         "stop"           "stopifnot"      "substitute"    
+[31] "warning"       
 
-$`package:ggExpress`
-[1] "qMarkdownImageLink"      "qqqAxisLength"          
-[3] "qqqCovert.named.vec2tbl" "qqqParsePlotname"       
-[5] "qqSave"                 
+$`package:checkmate`
+[1] "anyMissing"
 
-$`package:ggplot2`
-[1] "element_text"  "geom_hline"    "geom_vline"    "scale_x_log10"
-[5] "scale_y_log10" "theme"        
+$`package:isoENV`
+[1] "checkVars"
 
-$`package:ggpubr`
-[1] "ggbarplot"   "ggdensity"   "gghistogram" "ggpar"       "ggpie"      
-[6] "ggscatter"   "grids"      
+$`package:utils`
+[1] "lsf.str"
 
-$`package:MarkdownHelpers`
-[1] "llogit"
-
-$`package:Stringendo`
-[1] "flag.nameiftrue" "kpp"            
-
-character(0)
 base
-ggExpress
-ggplot2
-ggpubr
-MarkdownHelpers
-Stringendo
+checkmate
+isoENV
+utils

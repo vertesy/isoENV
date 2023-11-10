@@ -10,7 +10,7 @@ sourceClean(
   output.variables,
   passAllFunctions = TRUE,
   input.functions = NULL,
-  assignEnv = TRUE
+  returnEnv = TRUE
 )
 }
 \arguments{
@@ -24,7 +24,7 @@ sourceClean(
 
 \item{input.functions}{A character vector of global function names to be passed on if passAllFunctions is FALSE.}
 
-\item{assignEnv}{Logical; if TRUE, assigns the new environment to the global environment.}
+\item{returnEnv}{Logical; if TRUE, assigns the new environment to the global environment.}
 }
 \value{
 No return value, the function returns variables into the .GlobalEnv.
@@ -40,6 +40,6 @@ and functions from the global environment and return specified variables back to
                output.variables = c("res"),
                passAllFunctions = TRUE,
                input.functions = NULL,
-               assignEnv = TRUE)
+               returnEnv = TRUE)
 }
 }

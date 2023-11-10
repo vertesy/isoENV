@@ -6,12 +6,14 @@
 
 
 y <- 2 * x
-res <- fff(y)
+res <- funFFF(y)
 
 cat("Result is:", res, fill = T)
 
 z <- 33
+vNA <- NA
 
+funGGG <- function(x) x^3
 
 # defines: y, z, res
 # returns to .GlobalEnv:

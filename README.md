@@ -22,11 +22,12 @@ Bioinformatics workflows are traditionally split into two paradigms: the classic
 
 The classic bioinformatics pipeline calls tools after each other with clearly defined file inputs and parameters. This can be via a mother-bash file, or pipeline managers like snakeMake or NextFlow. 
 
-```bash
+```shell
 # mother.script.sh
 
 tool1 -in=Data -p=Parameters1 -out=OutPut1
 tool2 -in=OutPut1 -p=Parameters2 -out=OutPut2
+tool3 -in=OutPut2 -p=Parameters3 -out=OutPut3
 # ... etc
 ```
 
@@ -38,7 +39,7 @@ The other typical case is a completely funcionalized pipeline in an interactive 
 obj <- readInput(Data)
 obj <- funFilterData(obj, Parameters1)
 obj <- funProcessData(obj, Parameters2)
-obj <- funTransformData(obj, Parameters2)
+obj <- funTransformData(obj, Parameters3)
 # ... etc
 ```
 
@@ -49,9 +50,9 @@ While functionalizing each step is laudable, it often does not represent the ini
 
 obj <- readInput(Data)
 source('FilterData.R')
-# `FilterData.R` updates obj, creates variables, etc.
+# `FilterData.R` uses global variables, updates obj, creates variables, etc.
 source('ProcessData.R')
-# `ProcessData.R` updates obj, creates variables, etc.
+# `ProcessData.R` uses global variables, updates obj, creates variables, etc.
 source('TransformData.R')
 # ... etc
 ```

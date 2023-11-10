@@ -76,10 +76,14 @@ sourceClean <- function(path, input.variables, output.variables
   # Source the script in myEnv
   source(file = path, local = myEnv)
 
-  cat(11)
+
   # After sourcing, check if all output variables can be found in myEnv
-  if (all(output.variables %in% ls(envir = myEnv))) {
-    cat(setdiff(output.variables, ls(envir = myEnv)), "variables are missing from the output environment of the script", fill = T)
+  if (!all(output.variables %in% ls(envir = myEnv))) {
+    cat('Missing output', fill=T)
+    # cat(setdiff(output.variables, ls(envir = myEnv)), "variables are missing from the output environment of the script", fill = T)
+    warning("variable(s) missing:" , paste(setdiff(output.variables, ls(envir = myEnv))
+                                            , " from the output environment of the script"), immediate. = T)
+    output.variables <- setdiff(ls(envir = myEnv), output.variables)
   }
   # checkmate::assertSubset(x = output.variables, choices = ls(envir = myEnv),
   #                         add = "Not all of the output.variables were found to be returned.")
@@ -190,6 +194,7 @@ checkVars <- function(variables, envir, verbose = F, suffix = NULL) {
     } else if (length(value) == 0) {
       warning(var, " is empty")
     } else if (is.nan(value)) {
+      print(11111)
       warning(var, " is NaN: ", value)
     } else if (is.infinite(value)) {
       warning(var, " is Inf: ", value)

@@ -12,14 +12,14 @@ rm(list = ls(all.names = TRUE))
 my.script = paste0(ProjectDir, '/Development/Playground/02.dev.Local.R')
 
 
-devtools::document(ProjectDir);
-devtools::load_all(ProjectDir);
 
 vNULL <- NULL
 x <- 4
 funFFF <- function(x) x^3
 
 
+devtools::document(ProjectDir);
+devtools::load_all(ProjectDir);
 sourceClean(path = my.script
             , input.variables = c('x', 'vNULL', 'vNotDefined', 'funFFF')
             , passAllFunctions = F, input.functions = c("funFFF", "funGGG", 'x', 'vNotDefined' )
@@ -30,7 +30,7 @@ sourceClean(path = my.script
 sourceClean(path = my.script
             , input.variables = c('x')
             , output.variables = c('res','z')
-            , passAllFunctions = F, input.functions = c("funFFF", "funGGG")
+            , passAllFunctions = F, input.functions = c("funFFF")
 )
 
 sourceClean(path = my.script

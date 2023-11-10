@@ -6,15 +6,16 @@ devtools::load_all("~/GitHub/Packages/isoENV");
 rm(list = ls(all.names = TRUE))
 require(checkmate)
 
+(ProjectDir <- rstudioapi::getActiveProject())
 
 my <- NULL
 x <- 4
 fff <- function(x) x^3
 
-my.script = '~/GitHub/Packages/isoENV/Examples/Environment.02.Local.R'
-devtools::document("~/GitHub/Packages/isoENV");
+my.script = paste0(ProjectDir, '/Development/Playground/02.dev.Local.R')
+devtools::document(ProjectDir);
+devtools::load_all(ProjectDir);
 
-devtools::load_all("~/GitHub/Packages/isoENV");
 sourceClean(path = my.script
              , input.variables = c('x', 'my', 'notmine')
              , output.variables = c('res','z', 'ys')

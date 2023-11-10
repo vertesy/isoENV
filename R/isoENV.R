@@ -22,7 +22,9 @@
 #' @param output.variables A character vector of variable names from the sourced environment to be returned to the global environment.
 #' @param passAllFunctions Logical; if TRUE, all global functions are passed on, otherwise only those in input.functions.
 #' @param input.functions A character vector of global function names to be passed on if passAllFunctions is FALSE.
-#' @param returnEnv Logical; if TRUE, assigns the new environment to the global environment.
+#' @param returnEnv Logical; if TRUE, assigns the script environment to the global environment.
+#' @param removeBigObjs Logical; if TRUE, cleans the script environment from big objects, and return the remaing env to the global environment.
+#' @param max.size a numeric value specifying the maximum size of an objects to keep in the env, in bytes. Default =1e6 (1MB).
 #' @param ... Arguments to pass on to source()
 #' @return No return value, the function returns variables into the .GlobalEnv.
 #' @export
@@ -258,7 +260,7 @@ checkVars <- function(variables, envir, verbose = F
 #'
 #' This function removes objects from the specified environment that exceed a certain size.
 #' @param env an environment from which large objects should be removed.
-#' @param max.size a numeric value specifying the size threshold in bytes.
+#' @param max.size a numeric value specifying the maximum size of an objects to keep in the env, in bytes.
 #' @return The modified environment with large objects removed.
 #' @examples
 #' env <- new.env()

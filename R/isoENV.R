@@ -22,7 +22,7 @@
 #' @param output.variables A character vector of variable names from the sourced environment to be returned to the global environment.
 #' @param passAllFunctions Logical; if TRUE, all global functions are passed on, otherwise only those in input.functions.
 #' @param input.functions A character vector of global function names to be passed on if passAllFunctions is FALSE.
-#' @param assignEnv Logical; if TRUE, assigns the new environment to the global environment.
+#' @param returnEnv Logical; if TRUE, assigns the new environment to the global environment.
 #' @return No return value, the function returns variables into the .GlobalEnv.
 #' @export
 #' @examples
@@ -32,11 +32,11 @@
 #'                output.variables = c("res"),
 #'                passAllFunctions = TRUE,
 #'                input.functions = NULL,
-#'                assignEnv = TRUE)
+#'                returnEnv = TRUE)
 #' }
 sourceClean <- function(path, input.variables, output.variables
                          , passAllFunctions = TRUE, input.functions = NULL
-                         , assignEnv = TRUE) {
+                         , returnEnv = TRUE) {
 
   # Argument assertions
   stopifnot(
@@ -97,7 +97,7 @@ sourceClean <- function(path, input.variables, output.variables
   varsOut <- Filter(Negate(is.na), varsOut)
   list2env(varsOut, envir = .GlobalEnv)
 
-  if (assignEnv) {
+  if (returnEnv) {
     env.name <- paste0(".env.", script_name)
     assign(x = env.name, value = myEnv, envir = .GlobalEnv)
     cat("Script local environment is returned as:", env.name, '\n')

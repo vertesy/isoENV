@@ -95,21 +95,21 @@ test_that("checkVars does not issue a message for defined variables", {
 
 # rm('test_env')
 
-# sourceStrict -------------------------------------------------------------------------
+# sourceClean -------------------------------------------------------------------------
 
 # Assume we have a script that squares an input variable 'x' and stores it in 'res'.
 script_path <- tempfile()
 writeLines("res <- x^2", con = script_path)
 
 # Unit Test 1: Test sourcing with input and output variables
-print('sourceStrict 1')
-test_that("sourceStrict sources correctly with input and output variables", {
+print('sourceClean 1')
+test_that("sourceClean sources correctly with input and output variables", {
   x <- 4  # Define a global variable
-  sourceStrict(path = script_path,
+  sourceClean(path = script_path,
                input.variables = c("x"),
                output.variables = c("res"),
                passAllFunctions = TRUE,
-               assignEnv = FALSE)
+               returnEnv = FALSE)
 
   expect_equal(res, 16)
   # Clean up
@@ -117,16 +117,16 @@ test_that("sourceStrict sources correctly with input and output variables", {
 }); print('')
 
 # Unit Test 2: Test sourcing without passing all functions
-print('sourceStrict 2')
-test_that("sourceStrict doesn't pass all functions when specified", {
+print('sourceClean 2')
+test_that("sourceClean doesn't pass all functions when specified", {
   # Define a dummy function in the global environment
   dummy_func <- function() TRUE
-  sourceStrict(path = script_path,
+  sourceClean(path = script_path,
                input.variables = c("x"),
                output.variables = c("res"),
                passAllFunctions = FALSE,
                input.functions = 'a',  # Intentionally not passing dummy_func
-               assignEnv = TRUE)
+               returnEnv = TRUE)
 
   # Test the new environment does not contain dummy_func
 

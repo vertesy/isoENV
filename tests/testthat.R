@@ -14,7 +14,7 @@ test_check("isoENV")
 devtools::document("~/GitHub/Packages/isoENV")
 devtools::load_all("~/GitHub/Packages/isoENV");
 
-test_file(path = "~/GitHub/Packages/isoENV/tests/testthat/test-isoENV.R")
-
 # Run the tests
-test_file(path = "~/GitHub/Packages/isoENV/tests/testthat/")
+test_file(file = "~/GitHub/Packages/isoENV/tests/testthat/test-isoENV.R")
+test_file(file = "~/GitHub/Packages/isoENV/tests/testthat/test2-isoENV.R")
+

@@ -11,6 +11,8 @@ sourceClean(
   passAllFunctions = TRUE,
   input.functions = NULL,
   returnEnv = TRUE,
+  removeBigObjs = TRUE,
+  max.size = 1e+06,
   ...
 )
 }
@@ -25,7 +27,11 @@ sourceClean(
 
 \item{input.functions}{A character vector of global function names to be passed on if passAllFunctions is FALSE.}
 
-\item{returnEnv}{Logical; if TRUE, assigns the new environment to the global environment.}
+\item{returnEnv}{Logical; if TRUE, assigns the script environment to the global environment.}
+
+\item{removeBigObjs}{Logical; if TRUE, cleans the script environment from big objects, and return the remaing env to the global environment.}
+
+\item{max.size}{a numeric value specifying the maximum size of an objects to keep in the env, in bytes. Default =1e6 (1MB).}
 
 \item{...}{Arguments to pass on to source()}
 }

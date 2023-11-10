@@ -11,41 +11,6 @@
 # ____________________________________________________________________
 
 
-
-
-#' Remove Non-function Objects
-#'
-#' Removes all objects that are not functions from the specified environment.
-#'
-#' @param env environment from which to remove the variables, defaulting to the global environment.
-#' @return Nothing, but modifies the environment in place.
-#' @examples
-#' # Define some variables and functions in the global environment
-#' x <- 1
-#' y <- "a"
-#' z <- list(1, 2, 3)
-#' f <- function(x) x + 1
-#' g <- function(y) y * 2
-#'
-#' # Check the names of the objects in the global environment
-#' ls()
-#' [1] "f" "g" "x" "y" "z"
-#'
-#' # Remove all objects except functions from the global environment
-#' removeAllExceptFunctions()
-#'
-#' # Check the names of the objects in the global environment again
-#' ls()
-#' [1] "f" "g"
-#' @export
-removeAllExceptFunctions <- function(envir = .GlobalEnv) {
-  to_remove <- setdiff(ls(envir = envir), lsf.str(envir = envir))
-  rm(list = to_remove, envir = envir)
-
-}
-
-
-
 # ________________________________________________________________________________________________
 #' Source a script with strict environment control
 #'
@@ -62,14 +27,14 @@ removeAllExceptFunctions <- function(envir = .GlobalEnv) {
 #' @export
 #' @examples
 #' \dontrun{
-#'   sourceStrict(path = "path/to/your/script.R",
+#'   sourceClean(path = "path/to/your/script.R",
 #'                input.variables = c("x"),
 #'                output.variables = c("res"),
 #'                passAllFunctions = TRUE,
 #'                input.functions = NULL,
 #'                assignEnv = TRUE)
 #' }
-sourceStrict <- function(path, input.variables, output.variables
+sourceClean <- function(path, input.variables, output.variables
                          , passAllFunctions = TRUE, input.functions = NULL
                          , assignEnv = TRUE) {
 
@@ -142,9 +107,42 @@ sourceStrict <- function(path, input.variables, output.variables
 
 
 
+
 # ______________________________________________________________________________________________----
-# Section 2  ----
+# 2. Debugging  ----
 # ____________________________________________________________________
+
+# ______________________________________________________________________________________________----
+#' Remove Non-function Objects
+#'
+#' Removes all objects that are not functions from the specified environment.
+#'
+#' @param env environment from which to remove the variables, defaulting to the global environment.
+#' @return Nothing, but modifies the environment in place.
+#' @examples
+#' # Define some variables and functions in the global environment
+#' x <- 1
+#' y <- "a"
+#' z <- list(1, 2, 3)
+#' f <- function(x) x + 1
+#' g <- function(y) y * 2
+#'
+#' # Check the names of the objects in the global environment
+#' ls()
+#' [1] "f" "g" "x" "y" "z"
+#'
+#' # Remove all objects except functions from the global environment
+#' removeAllExceptFunctions()
+#'
+#' # Check the names of the objects in the global environment again
+#' ls()
+#' [1] "f" "g"
+#' @export
+removeAllExceptFunctions <- function(envir = .GlobalEnv) {
+  to_remove <- setdiff(ls(envir = envir), lsf.str(envir = envir))
+  rm(list = to_remove, envir = envir)
+
+}
 
 
 

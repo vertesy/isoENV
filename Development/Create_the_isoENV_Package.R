@@ -13,7 +13,7 @@ require("stringr")
 
 # Setup ------------------------
 PackageName <- "isoENV"
-package.version <- "0.0.1"
+package.version <- "0.1.0"
 setwd("~/GitHub/Packages/")
 
 (RepositoryDir <- paste0("~/GitHub/Packages/", PackageName, "/"))
@@ -24,15 +24,16 @@ setwd("~/GitHub/Packages/")
 dir.create(BackupDir)
 
 
-DESCRIPTION <- list("Title" = "isoENV helps you to work with isolated environments"
+DESCRIPTION <- list("Title" = " Tools to work with isolated environments for in-memory pipelines in R."
     , "Author" = person(given = "Abel", family = "Vertesy", email = "abel.vertesy@imba.oeaw.ac.at", role =  c("aut", "cre") )
     , "Authors@R" = 'person(given = "Abel", family = "Vertesy", email = "a.vertesy@imba.oeaw.ac.at", role =  c("aut", "cre") )'
-    , "Description" = "isoENV is a set of R functions that help you to work with isolated environments"
+    , "Description" = "isoENV is a set of R functions to invoke scripts in isolated, and controlled environments for
+    in-memory pipelines in R. Useful for single-session pipelines and exploratory data analysis."
     , "License" = "GPL-3 + file LICENSE"
     , "Version" = package.version
     , "Packaged" =  Sys.time()
     # , "Repository" =  "CRAN"
-    , "Depends" =  "Stringendo"
+    , "Depends" =  "Stringendo, checkmate"
     , "Imports" = "sessioninfo, stats"
     # , "Suggests" = ""
     , "BugReports"= "https://github.com/vertesy/isoENV/issues"

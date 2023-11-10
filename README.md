@@ -102,6 +102,7 @@ Install directly from **GitHub** via **devtools** with one R command:
 # install.packages("devtools"); # If you don't have it.
 
 # Install dependencies, e.g.:
+install.packages("checkmate")
 devtools::install_github(repo = "vertesy/Stringendo", upgrade = F)
 
 # Install UVI.tools
@@ -121,6 +122,47 @@ source("https://raw.githubusercontent.com/vertesy/UVI.tools/main/R/UVI.tools.R")
 
 <br>
 
+
+
+## Usage
+
+```r
+# mother.script.R
+devtools::load_all("~/GitHub/Packages/isoENV");
+
+# Define some stuff
+my <- NULL
+x <- 4
+fff <- function(x) x^3
+
+isoENV::sourceClean(path = './02.Local.R'
+             , input.variables = c('x', 'my', 'notmine')
+             , output.variables = c('res','z', 'ys')
+             , passAllFunctions = F
+             , input.functions = "fff")
+
+# Check
+res
+y # not found
+z
+
+```
+
+The daughter script
+```r
+# 02.Local.R
+y <- 2 * x
+res <- fff(y)
+cat("Result is:", res, fill = T)
+
+z <- 33
+
+# defines: y, z, res
+# returns to .GlobalEnv: 
+#   full env as `.env.02.Local.R` 
+#     if sourceClean(assignEnv = TRUE)`
+#   variables defined in `sourceClean(output.variables)`
+```
 
 
 ## List of Functions

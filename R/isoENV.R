@@ -162,21 +162,22 @@ sourceClean <- function(path, input.variables, output.variables
 #'
 #' @examples
 #' # Define a sample function
-#' sample_function <- function(x, y) {
-#'   x + y
-#' }
+#' Z <- 2
+#' funOK <- function(x, y) { x + y }
+#' funBAD <- function(x, y) { x + Z }
+#' funOKwoParenthesis <- function(x, y) x + 1
 #'
-#' # Apply strict evaluation
-#' strict_sample_function <- strict(sample_function)
-#'
-#' # Call the modified function
-#' result <- strict_sample_function(5, 3)
-#' print(result)
+#' # Check strict evaluation
+#' strict(funOK, 1, 2)
+#' strict(funBAD, 1, 2)
+#' strict(funOKwoParenthesis, 1, 2)
 strict <- function(f1, ...){
   function_text <- deparse(f1)
-  function_text <- paste(function_text[1],function_text[2],paste(function_text[c(-1,-2,-length(function_text))],collapse=";"),"}",collapse="")
+  function_text <- paste(function_text[1], function_text[2]
+                         , paste(function_text[c(-1, -2, -length(function_text))], collapse =";")
+                         , "}", collapse = "")
   strict0 <- function(f1, pos=2) eval(substitute(f1), as.environment(pos))
-  f1 <- eval(parse(text=paste0("strict0(",function_text,")")))
+  f1 <- eval(parse(text = paste0("strict0(", function_text, ")")))
   do.call(f1,list(...))
 }
 

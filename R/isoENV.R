@@ -374,6 +374,12 @@ strict <- function(f1, ...){
 #' checkGlobalVars(testFunction)
 #' checkGlobalVars(testFunction, silent = TRUE)
 checkGlobalVars <- function(f, silent = FALSE) {
+
+  stopifnot(is.function(f), is.logical(silent))
+
+   if (!requireNamespace("codetools", quietly = TRUE)) {
+    stop("Please install codetools, using install.packages('codetools')")
+  }
   vars <- codetools::findGlobals(f)
   found <- !vapply(vars, exists, logical(1), envir=as.environment(2))
   if (!silent && any(found)) {

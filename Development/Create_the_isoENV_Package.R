@@ -35,7 +35,11 @@ DESCRIPTION <- list("Title" = " Tools to work with isolated environments for in-
     # , "Repository" =  "CRAN"
     , "Depends" =  "Stringendo, checkmate"
     , "Imports" = "sessioninfo, stats"
-    # , "Suggests" = ""
+    , "Suggests" = "codetools"
+    # Packages that enhance the functionality of your package but are not
+    # required for its core operations. Packages listed under "Suggests" are not
+    # automatically installed with your package. Users can install them
+    # separately if they need the additional functionality.
     , "BugReports"= "https://github.com/vertesy/isoENV/issues"
 )
 

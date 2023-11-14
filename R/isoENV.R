@@ -145,45 +145,6 @@ sourceClean <- function(path, input.variables, output.variables
 # 3. Helpers  ----
 # ____________________________________________________________________
 
-
-#' Enforce Strict Evaluation in a Function
-#'
-#' @title Enforce Strict Evaluation in a Function
-#' @description Modifies an existing function (`f1`) to enforce strict evaluation of its arguments.
-#' This is achieved by redefining the function with its arguments evaluated in a specified environment,
-#' which can help in debugging and ensuring that all variables are defined before function execution.
-#' @source From: moodymudskipper at https://stackoverflow.com/questions/6216968/r-force-local-scope/
-#'
-#' @param f1 The function for which strict evaluation is to be enforced.
-#' @param ... Additional arguments to be passed to the modified function.
-#'
-#' @return The result of executing the modified function with strict evaluation.
-#' @export
-#'
-#' @examples
-#' # Define a sample function
-#' Z <- 2
-#' funOK <- function(x, y) { x + y }
-#' funBAD <- function(x, y) { x + Z }
-#' funOKwoParenthesis <- function(x, y) x + 1
-#'
-#' # Check strict evaluation
-#' strict(funOK, 1, 2)
-#' strict(funBAD, 1, 2)
-#' strict(funOKwoParenthesis, 1, 2)
-strict <- function(f1, ...){
-  function_text <- deparse(f1)
-  function_text <- paste(function_text[1], function_text[2]
-                         , paste(function_text[c(-1, -2, -length(function_text))], collapse =";")
-                         , "}", collapse = "")
-  strict0 <- function(f1, pos=2) eval(substitute(f1), as.environment(pos))
-  f1 <- eval(parse(text = paste0("strict0(", function_text, ")")))
-  do.call(f1,list(...))
-}
-
-
-
-
 #' Check Variables in an Environment
 #'
 #' This function iterates over a list of variable names and checks their
@@ -351,4 +312,83 @@ checkVars <- function(variables, envir, verbose = F
 
 # ____________________________________________________________________
 
+
+# ______________________________________________________________________________________________----
+# 5. Code checks (non-core functionality)  ----
+# ____________________________________________________________________
+
+
+#' @title Enforce Strict Evaluation in a Function
+#'
+#' @description Modifies an existing function (`f1`) to enforce strict evaluation of its arguments.
+#' This is achieved by redefining the function with its arguments evaluated in a specified environment,
+#' which can help in debugging and ensuring that all variables are defined before function execution.
+#' @source From: moodymudskipper at https://stackoverflow.com/questions/6216968/r-force-local-scope/
+#'
+#' @param f1 The function for which strict evaluation is to be enforced.
+#' @param ... Additional arguments to be passed to the modified function.
+#'
+#' @return The result of executing the modified function with strict evaluation.
+#' @export
+#'
+#' @examples
+#' # Define a sample function
+#' Z <- 2
+#' funOK <- function(x, y) { x + y }
+#' funBAD <- function(x, y) { x + Z }
+#' funOKwoParenthesis <- function(x, y) x + 1
+#'
+#' # Check strict evaluation
+#' strict(funOK, 1, 2)
+#' strict(funBAD, 1, 2)
+#' strict(funOKwoParenthesis, 1, 2)
+strict <- function(f1, ...){
+  function_text <- deparse(f1)
+  function_text <- paste(function_text[1], function_text[2]
+                         , paste(function_text[c(-1, -2, -length(function_text))], collapse =";")
+                         , "}", collapse = "")
+  strict0 <- function(f1, pos=2) eval(substitute(f1), as.environment(pos))
+  f1 <- eval(parse(text = paste0("strict0(", function_text, ")")))
+  do.call(f1,list(...))
+}
+
+
+
+# ____________________________________________________________________
+#' @title Check for Use of Global Variables in a Function
+#'
+#' @description This function checks whether the specified function (`f`) uses any global variables.
+#' It returns `TRUE` if no global variables are used, and `FALSE` otherwise. If global variables are found
+#' and `silent` is `FALSE`, a warning is issued listing the global variables.
+#'
+#' @param f The function to be checked for global variable usage.
+#' @param silent Logical parameter with a default value of `FALSE`.
+#' If `TRUE`, the function suppresses warnings about global variable usage.
+#' @importFrom codetools findGlobals
+#' @return Returns `TRUE` if no global variables are used in the function `f`, `FALSE` otherwise.
+#' If `silent` is `FALSE` and global variables are found, a warning is issued.
+#' @export
+#'
+#' @examples
+#' testFunction <- function(x, y) { z <- x + y; return(z) }
+#' checkGlobalVars(testFunction)
+#' checkGlobalVars(testFunction, silent = TRUE)
+checkGlobalVars <- function(f, silent = FALSE) {
+  vars <- codetools::findGlobals(f)
+  found <- !vapply(vars, exists, logical(1), envir=as.environment(2))
+  if (!silent && any(found)) {
+    warning("global variables used: ", paste(names(found)[found], collapse=', '))
+    return(invisible(FALSE))
+  }
+  !any(found)
+}
+
+
+
+# ____________________________________________________________________
+
+
+
+
+# ____________________________________________________________________
 

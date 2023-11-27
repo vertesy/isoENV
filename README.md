@@ -1,6 +1,4 @@
-### [in development]
-
-# isoENV
+# isoENV ![status: experimental](https://raw.githubusercontent.com/vertesy/TheCorvinas/master/GitHub/Badges/experimental.svg)
 
 ### Isolated environments for R script execution & single-session, in-memory pipelines.
 

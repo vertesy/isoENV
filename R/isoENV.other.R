@@ -32,19 +32,18 @@
 #'
 #' # Check the names of the objects in the global environment
 #' ls()
-#' [1] "f" "g" "x" "y" "z"
+#' # [1] "f" "g" "x" "y" "z"
 #'
 #' # Remove all objects except functions from the global environment
 #' removeAllExceptFunctions()
 #'
 #' # Check the names of the objects in the global environment again
 #' ls()
-#' [1] "f" "g"
+#' # [1] "f" "g"
 #' @export
 removeAllExceptFunctions <- function(envir = .GlobalEnv) {
   to_remove <- setdiff(ls(envir = envir), lsf.str(envir = envir))
   rm(list = to_remove, envir = envir)
-
 }
 
 

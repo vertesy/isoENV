@@ -82,7 +82,7 @@ sourceClean <- function(
     if (length(input.functions) == 0) {
       stop("input.functions must be provided if passAllFunctions is FALSE")
     } else {
-      if (checkmate::anyMissing(input.functions)) warning("Missing function!\n", immediate. = T)
+      if (checkmate::anyMissing(input.functions)) warning("Missing function!\n", immediate. = TRUE)
       objects.existing <- checkVars(input.functions, envir = globalenv(), prefix = "Missing FUNCTIONS!\n")
       obj.is.function <- sapply(objects.existing, function(x) is.function(get(x, envir = .GlobalEnv)))
 
@@ -129,7 +129,7 @@ sourceClean <- function(
 
   if (returnEnv) {
     env.name <- paste0(".env.", script_name)
-    if (removeBigObjs) myEnv <- isoENV::.removeBigObjsFromEnv(myEnv, max.size = max.size)
+    if (removeBigObjs) myEnv <- .removeBigObjsFromEnv(myEnv, max.size = max.size)
 
     assign(x = env.name, value = myEnv, envir = .GlobalEnv)
     cat(">> Script local environment is returned as:", env.name, "\n")
@@ -172,7 +172,7 @@ sourceClean <- function(
 #' checkVars(output.variables, envir = myEnv)
 #' @export
 checkVars <- function(
-    variables, envir, verbose = F,
+    variables, envir, verbose = FALSE,
     prefix = "Problematic variables!\n", suffix = NULL) {
   stopifnot(is.character(variables), is.environment(envir))
 
@@ -188,7 +188,7 @@ checkVars <- function(
   for (var in variables) {
     # cat("Checking variable:", var, "\n")
     if (!exists(var, envir = envir)) {
-      warning(var, " is missing", immediate. = T)
+      warning(var, " is missing", immediate. = TRUE)
       wasProblem <- TRUE
     } else {
       value <- get(var, envir = envir)
@@ -196,28 +196,28 @@ checkVars <- function(
         # cat(var, "is a function, skipping...\n")
         next
       } else if (is.null(value)) {
-        warning(var, " is NULL", immediate. = T)
+        warning(var, " is NULL", immediate. = TRUE)
         wasProblem <- TRUE
       } else if (identical(value, NA)) {
-        warning(var, " is NA", immediate. = T)
+        warning(var, " is NA", immediate. = TRUE)
         wasProblem <- TRUE
       } else if (length(value) == 0) {
-        warning(var, " is empty", immediate. = T)
+        warning(var, " is empty", immediate. = TRUE)
         wasProblem <- TRUE
       } else if (is.numeric(value) && any(is.nan(value))) {
-        warning(var, " contains NaN values", immediate. = T)
+        warning(var, " contains NaN values", immediate. = TRUE)
         wasProblem <- TRUE
       } else if (is.numeric(value) && any(is.infinite(value))) {
-        warning(var, " contains Inf values", immediate. = T)
+        warning(var, " contains Inf values", immediate. = TRUE)
         wasProblem <- TRUE
       } else if (verbose) {
-        message(var, " is defined and not empty", immediate. = T)
+        message(var, " is defined and not empty", immediate. = TRUE)
         wasProblem <- TRUE
       }
     }
   } # for
 
-  if (!is.null(prefix) && wasProblem) cat(as.character(prefix), fill = T)
+  if (!is.null(prefix) && wasProblem) cat(as.character(prefix), fill = TRUE)
 
   variables.existing <- variables[sapply(variables, exists)]
   return(variables.existing)

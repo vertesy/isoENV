@@ -2,119 +2,81 @@
 # Create_the_isoENV_Package.R
 ######################################################################################################
 # source("~/GitHub/Packages/isoENV/Development/Create_the_isoENV_Package.R")
-rm(list = ls(all.names = TRUE));
-try(dev.off(), silent = TRUE)
+# rm(list = ls(all.names = TRUE)); try(dev.off(), silent = TRUE)
 
 # Functions ------------------------
-require("devtools")
-require("roxygen2")
-require("stringr")
-
+require(PackageTools)
+devtools::load_all("~/GitHub/Packages/PackageTools/")
 
 # Setup ------------------------
-PackageName <- "isoENV"
-package.version <- "0.1.1"
-setwd("~/GitHub/Packages/")
+repository.dir <- "~/GitHub/Packages/isoENV/"
+config.path <- file.path(repository.dir, "Development/config.R")
 
-(RepositoryDir <- paste0("~/GitHub/Packages/", PackageName, "/"))
-(fname <- paste0(PackageName, ".R"))
-(Package_FnP <- paste0(RepositoryDir, "R/", fname))
+"TAKE A LOOK AT"
+file.edit(config.path)
+source(config.path)
 
-(BackupDir <- paste0("~/GitHub/Packages/", PackageName, "/Development/"))
-dir.create(BackupDir)
-
-
-DESCRIPTION <- list("Title" = " Tools to work with isolated environments for in-memory pipelines in R."
-    , "Author" = person(given = "Abel", family = "Vertesy", email = "abel.vertesy@imba.oeaw.ac.at", role =  c("aut", "cre") )
-    , "Authors@R" = 'person(given = "Abel", family = "Vertesy", email = "a.vertesy@imba.oeaw.ac.at", role =  c("aut", "cre") )'
-    , "Description" = "isoENV is a set of R functions to invoke scripts in isolated, and controlled environments for
-    in-memory pipelines in R. Useful for single-session pipelines and exploratory data analysis."
-    , "License" = "GPL-3 + file LICENSE"
-    , "Version" = package.version
-    , "Packaged" =  Sys.time()
-    # , "Repository" =  "CRAN"
-    , "Depends" =  "Stringendo, checkmate"
-    , "Imports" = "sessioninfo, stats"
-    # , "Suggests" = ""
-    , "BugReports"= "https://github.com/vertesy/isoENV/issues"
-)
-
-
-setwd(RepositoryDir)
-if ( !dir.exists(RepositoryDir) ) { create(path = RepositoryDir, description = DESCRIPTION, rstudio = TRUE)
-} else {
-    getwd()
-    try(file.remove(c("DESCRIPTION","NAMESPACE", "isoENV.Rproj")))
-    create_package(path = RepositoryDir, fields = DESCRIPTION, open = F)
-}
-
-
-# go and write fun's ------------------------------------------------------------------------
-# file.edit(Package_FnP)
-
-
-# replace output files ------------------------------------------------
-BackupOldFile <- paste0(BackupDir, "Development", ".bac", print = FALSE)
-AnnotatedFile <- paste0(BackupDir, "Development", ".annot.R", print = FALSE)
-file.copy(from <- Package_FnP, to = BackupOldFile, overwrite = TRUE)
-
-
-# Compile a package ------------------------------------------------
-setwd(RepositoryDir)
-getwd()
-document()
-warnings()
-
-{
-  "update cff version"
-  citpath <- paste0(RepositoryDir, 'CITATION.cff')
-  xfun::gsub_file(file = citpath, perl = T, "^version: v.+", paste0("version: v", package.version))
-}
+PackageTools::document_and_create_package(repository.dir, config_file = 'config.R')
+'git add commit push to remote'
 
 # Install your package ------------------------------------------------
-# setwd(RepositoryDir)
-install(RepositoryDir, upgrade = F)
+"disable rprofile by"
+rprofile()
+devtools::install_local(repository.dir, upgrade = F)
 
-# require("isoENV")
-# # remove.packages("isoENV")
-# # Test your package ------------------------------------------------
-# help("wplot")
-# cat("\014")
-# devtools::run_examples()
 
 # Test if you can install from github ------------------------------------------------
-# devtools::install_github(repo = "vertesy/isoENV")
-
-# require("isoENV")
-
-# Clean up if not needed anymore ------------------------------------------------
-# View(installed.packages())
-# remove.packages("isoENV")
-
-check(RepositoryDir, cran = TRUE)
+remote.path <- file.path(DESCRIPTION$'github.user', DESCRIPTION$'package.name')
+pak::pkg_install(remote.path)
+# unload(DESCRIPTION$'package.name')
+# require(DESCRIPTION$'package.name')
+# # remove.packages(DESCRIPTION$'package.name')
 
 
-# Check package dependencies ------------------------------------------------
+# CMD CHECK ------------------------------------------------
+checkres <- devtools::check(repository.dir, cran = FALSE)
+
+
+
+# Automated Codebase linting to tidyverse style ------------------------------------------------
+styler::style_pkg(repository.dir)
+
+
+# Extract package dependencies ------------------------------------------------
+PackageTools::extract_package_dependencies(repository.dir)
+
+
+# Visualize function dependencies within the package------------------------------------------------
 {
-  depFile <- paste0(RepositoryDir, 'Development/Dependencies.R')
-
-  (f.deps <- NCmisc::list.functions.in.file(filename = Package_FnP))
-  # clipr::write_clip(f.deps)
-
-  sink(file <- depFile); print(f.deps); sink()
-  p.deps <- gsub(x = names(f.deps), pattern = 'package:', replacement = '')
-  write(x = p.deps, file = depFile, append = T)
-  p.dep.declared <- trimws(unlist(strsplit(DESCRIPTION$Imports, ",")))
-  p.dep.new <- sort(union( p.deps, p.dep.declared))
-  # clipr::write_clip(p.dep.new)
+  warning("works only on the installed version of the package!")
+  pkgnet_result <- pkgnet::CreatePackageReport(DESCRIPTION$'package.name')
+  fun_graph     <- pkgnet_result$FunctionReporter$pkg_graph$'igraph'
+  PackageTools::convert_igraph_to_mermaid(graph = fun_graph, openMermaid = T, copy_to_clipboard = T)
 }
 
-if (F) {
-  "run only once when initializing the repo"
-  usethis::use_testthat(edition = 3)
-  use_test(name = fname)
-  # use_test(name = NULL, open = rlang::is_interactive())
 
+# Try to find and add missing @importFrom statements------------------------------------------------
+devtools::load_all("~/GitHub/Packages/PackageTools/")
+if (F) {
+  (excluded.packages <- unlist(strsplit(DESCRIPTION$'depends', split = ", ")))
+  (ls.scripts.full.path <- list.files(file.path(repository.dir, "R"), full.names = T))
+  for (scriptX in ls.scripts.full.path) {
+    PackageTools::add_importFrom_statements(scriptX, exclude_packages = excluded.packages)
+  }
+}
+
+
+# Generate the list of functions ------------------------------------------------
+for (scriptX in ls.scripts.full.path) {
+  PackageTools::list_of_funs_to_markdown(scriptX)
+}
+
+PackageTools::copy_github_badge("active") # Add badge to readme via clipboard
+
+
+# Replaces T with TRUE and F with FALSE ------------------------------------------------
+for (scriptX in ls.scripts.full.path) {
+  PackageTools::replace_tf_with_true_false(scriptX)
 }
 
 

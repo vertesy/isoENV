@@ -12,19 +12,15 @@ library(isoENV)
 test_check("isoENV")
 
 devtools::document("~/GitHub/Packages/isoENV")
-devtools::load_all("~/GitHub/Packages/isoENV");
-
+devtools::load_all("~/GitHub/Packages/isoENV")
 # Run the tests
 
 
-'OKAY'
+"OKAY"
 test_file(file = "~/GitHub/Packages/isoENV/tests/testthat/test-removeBigObjsFromEnv.R")
 test_file(file = "~/GitHub/Packages/isoENV/tests/testthat/test-removeAllExceptFunctions.R")
 
-'FAIL'
+"FAIL"
 test_file(file = "~/GitHub/Packages/isoENV/tests/testthat/test-sourceClean.R")
 test_file(file = "~/GitHub/Packages/isoENV/tests/testthat/test-checkVars.R")
 test_file(file = "~/GitHub/Packages/isoENV/tests/testthat/test-filterFunctionsFromObjNames.R")
-
-
-

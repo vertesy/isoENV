@@ -1,6 +1,8 @@
-print('test-removeAllExceptFunctions started')
+print("test-removeAllExceptFunctions started")
 rm(list = ls(all.names = TRUE))
-library(testthat); library(checkmate); print('')
+library(testthat)
+library(checkmate)
+print("")
 
 # removeAllExceptFunctions -------------------------------------------------------------------------
 
@@ -23,12 +25,15 @@ library(testthat); library(checkmate); print('')
 
 
 # Test that it works on a specified environment
-print(''); print('removeAllExceptFunctions 2')
+print("")
+print("removeAllExceptFunctions 2")
 test_that("Variables are removed from specified environment", {
   test_env <- new.env()
   assign("a", 1, envir = test_env)
   assign("b", 2, envir = test_env)
-  assign("fx", function() { TRUE }, envir = test_env)
+  assign("fx", function() {
+    TRUE
+  }, envir = test_env)
   isoENV::removeAllExceptFunctions(env = test_env)
 
   expect_false(exists("a", envir = test_env))
@@ -37,6 +42,5 @@ test_that("Variables are removed from specified environment", {
 
   # Clean up
   rm(test_env)
-}); print('')
-
-
+})
+print("")

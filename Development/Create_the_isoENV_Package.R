@@ -19,6 +19,7 @@ source(config.path)
 PackageTools::document_and_create_package(repository.dir, config_file = 'config.R')
 'git add commit push to remote'
 
+
 # Install your package ------------------------------------------------
 "disable rprofile by"
 rprofile()

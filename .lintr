@@ -1,0 +1,8 @@
+linters:
+  - line_length_linter(120)       # Set the maximum line length
+  - object_name_linter(3)        # Set the minimum object name length
+  - trailing_whitespace_linter()  # Check for trailing whitespace
+  - no_tab_linter()              # Check for tabs (use spaces instead)
+  - spaces_inside_parens_linter() # Enforce spaces inside parentheses
+  - assignment_linter("<-")      # Enforce use of <- for assignment
+  - assignment_linter("=")       # Enforce use of = for argument binding

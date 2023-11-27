@@ -44,11 +44,13 @@ and functions from the global environment and return specified variables back to
 }
 \examples{
 \dontrun{
-  sourceClean(path = "path/to/your/script.R",
-               input.variables = c("x"),
-               output.variables = c("res"),
-               passAllFunctions = TRUE,
-               input.functions = NULL,
-               returnEnv = TRUE)
+sourceClean(
+  path = "path/to/your/script.R",
+  input.variables = c("x"),
+  output.variables = c("res"),
+  passAllFunctions = TRUE,
+  input.functions = NULL,
+  returnEnv = TRUE
+)
 }
 }

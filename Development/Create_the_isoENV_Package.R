@@ -57,9 +57,9 @@ PackageTools::extract_package_dependencies(repository.dir)
 
 # Try to find and add missing @importFrom statements------------------------------------------------
 devtools::load_all("~/GitHub/Packages/PackageTools/")
+(ls.scripts.full.path <- list.files(file.path(repository.dir, "R"), full.names = T))
 if (F) {
   (excluded.packages <- unlist(strsplit(DESCRIPTION$'depends', split = ", ")))
-  (ls.scripts.full.path <- list.files(file.path(repository.dir, "R"), full.names = T))
   for (scriptX in ls.scripts.full.path) {
     PackageTools::add_importFrom_statements(scriptX, exclude_packages = excluded.packages)
   }

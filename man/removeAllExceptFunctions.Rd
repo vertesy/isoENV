@@ -25,12 +25,12 @@ g <- function(y) y * 2
 
 # Check the names of the objects in the global environment
 ls()
-[1] "f" "g" "x" "y" "z"
+# [1] "f" "g" "x" "y" "z"
 
 # Remove all objects except functions from the global environment
 removeAllExceptFunctions()
 
 # Check the names of the objects in the global environment again
 ls()
-[1] "f" "g"
+# [1] "f" "g"
 }

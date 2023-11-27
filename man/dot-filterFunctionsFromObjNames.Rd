@@ -23,5 +23,5 @@ It issues warnings for function names and for missing objects, and returns a lis
 myEnv <- new.env()
 myEnv$x <- 4
 myEnv$fff <- function(x) x^3
-.filterFunctionsFromObjNames(c('x', 'fff'), envir = myEnv)
+.filterFunctionsFromObjNames(c("x", "fff"), envir = myEnv)
 }

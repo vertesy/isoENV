@@ -162,6 +162,20 @@ z <- 33
 #   variables defined in `sourceClean(output.variables)`
 ```
 
+## Function relationships
+ > (of connected functions)
+
+ ```mermaid
+ flowchart LR 
+  sourceClean(sourceClean) --> checkVars(checkVars)
+  sourceClean(sourceClean) --> .removeBigObjsFromEnv(.removeBigObjsFromEnv)
+
+ ```
+ *created by `convert_igraph_to_mermaid()`*
+
+
+
+
 
 ## List of Functions
 

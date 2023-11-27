@@ -7,7 +7,7 @@
 checkVars(
   variables,
   envir,
-  verbose = F,
+  verbose = FALSE,
   prefix = "Problematic variables!\\n",
   suffix = NULL
 )
@@ -36,6 +36,6 @@ myEnv$aaa <- 111
 myEnv$xxx <- NULL
 myEnv$yyy <- list()
 myEnv$zzz <- numeric()
-output.variables <- c('aaa','xxx', 'zzz', 'yyy', 'bbb')
+output.variables <- c("aaa", "xxx", "zzz", "yyy", "bbb")
 checkVars(output.variables, envir = myEnv)
 }

@@ -20,12 +20,16 @@
 #'
 #' @param path The file path of the R script to be sourced.
 #' @param input.variables A character vector of global variable names to be passed on.
-#' @param output.variables A character vector of variable names from the sourced environment to be returned to the global environment.
-#' @param passAllFunctions Logical; if TRUE, all global functions are passed on, otherwise only those in input.functions.
+#' @param output.variables A character vector of variable names from the sourced environment to be
+#' returned to the global environment. Default = "input.variables".
+#' @param passAllFunctions Logical; if TRUE, all global functions are passed on, otherwise only
+#' those in input.functions.
 #' @param input.functions A character vector of global function names to be passed on if passAllFunctions is FALSE.
 #' @param returnEnv Logical; if TRUE, assigns the script environment to the global environment.
-#' @param removeBigObjs Logical; if TRUE, cleans the script environment from big objects, and return the remaing env to the global environment.
-#' @param max.size a numeric value specifying the maximum size of an objects to keep in the env, in bytes. Default =1e6 (1MB).
+#' @param removeBigObjs Logical; if TRUE, cleans the script environment from big objects, and
+#' return the remaing env to the global environment.
+#' @param max.size a numeric value specifying the maximum size of an objects to keep in the env,
+#' in bytes. Default =1e6 (1MB).
 #' @param ... Arguments to pass on to source()
 #' @return No return value, the function returns variables into the .GlobalEnv.
 #' @export
@@ -41,7 +45,7 @@
 #' )
 #' }
 sourceClean <- function(
-    path, input.variables, output.variables,
+    path, input.variables, output.variables = input.variables,
     passAllFunctions = TRUE, input.functions = NULL,
     returnEnv = TRUE, removeBigObjs = TRUE, max.size = 1e6,
     ...) {
@@ -406,7 +410,44 @@ checkGlobalVars <- function(f, silent = FALSE) {
 
 
 # ____________________________________________________________________
+#' @title Find Functions in Specified Packages
+#'
+#' @description This function returns a list of all functions available in the specified packages.
+#' If a package is not loaded or does not exist, it is skipped.
+#'
+#' @param packages A character vector of package names.
+#'
+#' @return A list where each element is a character vector of function names for the corresponding package.
+#' Packages not loaded or non-existent are returned as `NULL`.
+#' @examples
+#' # Assuming the required packages are installed and loaded
+#' pkgs <- c("ggplot2", "dplyr")
+#' .findFunctions(pkgs)
+#' @export
 
+.findFunctions <- function(std_packages = c("tidyverse")
+                           , custom_packages = c("Stringendo", "ReadWriter", "CodeAndRoll2", "MarkdownHelpers"
+                                        , "MarkdownReports", "Seurat.utils", "isoENV", "UVI.tools"
+                                        , "Connectome.tools", "NestedMultiplexer")
+                           , other_packages = NULL) {
+  stopifnot(is.character(std_packages),
+            is.character(custom_packages),
+            (is.character(other_packages) | is.null(other_packages) ) )
+  packages <- sort(unique(do.call(c, list(std_packages, vertesy_packages, other_packages))))
+  print(paste(length(packages), "packages are searched..."))
+
+  funs <- unlist(sapply(packages, function(pkg) {
+    ns <- tryCatch(getNamespace(pkg), error = function(e) NULL)
+    if (!is.null(ns)) {
+      lsf.str(envir = ns)
+    } else {
+      NULL
+    }
+  }, simplify = FALSE))
+
+  print(paste(length(funs), "functions are found."))
+  return(funs)
+}
 
 
 

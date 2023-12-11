@@ -46,7 +46,7 @@
 #' }
 sourceClean <- function(
     path, input.variables, output.variables = input.variables,
-    passAllFunctions = TRUE, input.functions = NULL,
+    passAllFunctions = FALSE, input.functions = .findFunctions(),
     returnEnv = TRUE, removeBigObjs = TRUE, max.size = 1e6,
     ...) {
   # Argument assertions

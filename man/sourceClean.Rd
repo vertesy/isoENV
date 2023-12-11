@@ -7,9 +7,9 @@
 sourceClean(
   path,
   input.variables,
-  output.variables,
-  passAllFunctions = TRUE,
-  input.functions = NULL,
+  output.variables = input.variables,
+  passAllFunctions = FALSE,
+  input.functions = .findFunctions(),
   returnEnv = TRUE,
   removeBigObjs = TRUE,
   max.size = 1e+06,
@@ -21,17 +21,21 @@ sourceClean(
 
 \item{input.variables}{A character vector of global variable names to be passed on.}
 
-\item{output.variables}{A character vector of variable names from the sourced environment to be returned to the global environment.}
+\item{output.variables}{A character vector of variable names from the sourced environment to be
+returned to the global environment. Default = "input.variables".}
 
-\item{passAllFunctions}{Logical; if TRUE, all global functions are passed on, otherwise only those in input.functions.}
+\item{passAllFunctions}{Logical; if TRUE, all global functions are passed on, otherwise only
+those in input.functions.}
 
 \item{input.functions}{A character vector of global function names to be passed on if passAllFunctions is FALSE.}
 
 \item{returnEnv}{Logical; if TRUE, assigns the script environment to the global environment.}
 
-\item{removeBigObjs}{Logical; if TRUE, cleans the script environment from big objects, and return the remaing env to the global environment.}
+\item{removeBigObjs}{Logical; if TRUE, cleans the script environment from big objects, and
+return the remaing env to the global environment.}
 
-\item{max.size}{a numeric value specifying the maximum size of an objects to keep in the env, in bytes. Default =1e6 (1MB).}
+\item{max.size}{a numeric value specifying the maximum size of an objects to keep in the env,
+in bytes. Default =1e6 (1MB).}
 
 \item{...}{Arguments to pass on to source()}
 }

@@ -25,6 +25,8 @@
 #' @param passAllFunctions Logical; if TRUE, all global functions are passed on, otherwise only
 #' those in input.functions.
 #' @param input.functions A character vector of global function names to be passed on if passAllFunctions is FALSE.
+#' @param packages.load.default Default set of packages (@vertesy) to load into the script's namespace.
+#' @param packages.load.custom Additional custom packages to load into the script's namespace.
 #' @param returnEnv Logical; if TRUE, assigns the script environment to the global environment.
 #' @param removeBigObjs Logical; if TRUE, cleans the script environment from big objects, and
 #' return the remaing env to the global environment.
@@ -47,19 +49,23 @@
 sourceClean <- function(
     path, input.variables, output.variables = input.variables,
     passAllFunctions = FALSE, input.functions = NULL,
-    packages.load = c("Stringendo", "ReadWriter", "CodeAndRoll2", "MarkdownHelpers"
+    packages.load.default = c("Stringendo", "ReadWriter", "CodeAndRoll2", "MarkdownHelpers"
                      , "MarkdownReports", "Seurat.utils", "isoENV", "UVI.tools"
                      , "Connectome.tools", "NestedMultiplexer"),
-    packages.library = NULL,
+    packages.load.custom = c("Seurat"),
+    # packages.library = NULL,
     returnEnv = TRUE, removeBigObjs = TRUE, max.size = 1e6,
     ...) {
+
+  all.packages.load <- union(packages.load.default, packages.load.custom)
+
   # Argument assertions
   stopifnot(
     is.character(path),
     is.character(input.variables),
     is.character(output.variables),
     "Either passAllFunctions OR give a character of fun names" =
-      isTRUE(passAllFunctions) || !is.null(input.functions) || !is.null(packages.load)
+      isTRUE(passAllFunctions) || !is.null(input.functions) || !is.null(all.packages.load)
   )
   script_name <- basename(path)
 
@@ -88,30 +94,23 @@ sourceClean <- function(
 
   # Depending on the flag, either pass all functions or only specified ones
   if (length(input.functions)) {
-    cat(111)
-    # if ( length(input.functions) == 0 && length(packages.load) == 0) {
-    #   stop("input.functions must be provided if passAllFunctions is FALSE")
-    # } else {
-      if (checkmate::anyMissing(input.functions)) warning("Missing function!\n", immediate. = TRUE)
-      objects.existing <- checkVars(input.functions, envir = globalenv(), prefix = "Missing FUNCTIONS!\n")
-      obj.is.function <- sapply(objects.existing, function(x) is.function(get(x, envir = .GlobalEnv)))
+    if (checkmate::anyMissing(input.functions)) warning("Missing function!\n", immediate. = TRUE)
+    objects.existing <- checkVars(input.functions, envir = globalenv(), prefix = "Missing FUNCTIONS!\n")
+    obj.is.function <- sapply(objects.existing, function(x) is.function(get(x, envir = .GlobalEnv)))
 
-      if (any(!obj.is.function)) {
-        xm <- cat(
-          "Non-FUNCTIONS passed to input.functions:", objects.existing[!obj.is.function],
-          "\nSkipped.\n"
-        )
-      }
-      input.functions <- objects.existing[obj.is.function]
-      print(paste(length(input.functions), "input.functions"))
-    # }
+    if (any(!obj.is.function)) {
+      xm <- cat(
+        "Non-FUNCTIONS passed to input.functions:", objects.existing[!obj.is.function],
+        "\nSkipped.\n"
+      )
+    }
+    input.functions <- objects.existing[obj.is.function]
+    print(paste(length(input.functions), "input.functions"))
   }
 
   # Load the package into the specified environment
-  if (length(packages.load)) {
-    cat('packages.load:')
-
-    for (pkg in packages.load) {
+  if (length(all.packages.load)) {
+    for (pkg in all.packages.load) {
       .importPackageFunctions(pkg, myEnv)
     }
   }
@@ -122,11 +121,6 @@ sourceClean <- function(
       lsf.str(envir = .GlobalEnv)
     } else if (length(input.functions)) {
       input.functions
-    } else if (length(packages.load)) {
-      # unlist(sapply(packages.load, function(pkg) {
-      #   ns <- tryCatch(getNamespace(pkg), error = function(e) NULL)
-      #   if (!is.null(ns)) lsf.str(envir = ns)
-      # }))
     }
 
   # Copy functions from the global environment to myEnv
@@ -136,12 +130,10 @@ sourceClean <- function(
     # functionsToPass <- Filter(Negate(is.na), functionsToPass)
     list2env(functionsToPass, envir = myEnv)
   }
-  cat(222)
 
   # ________________________________________________________________________________________________
   # Source the script in myEnv
   source(file = path, local = myEnv, ...)
-  cat(11)
   # ________________________________________________________________________________________________
   # Output Variables ----
   output.variables.existing <- checkVars(output.variables, envir = myEnv, prefix = "Problematic OUTPUT!\n")

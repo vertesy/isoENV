@@ -81,7 +81,7 @@ sourceClean <- function(
     )
   }
 
-  # Create new environment that does not see .GlobalEnv (not it's parent)/
+  # Create new environment that do,es not see .GlobalEnv (not it's parent)/
   myEnv <- new.env(parent = baseenv())
 
   # Copy specified global variables to myEnv

@@ -9,7 +9,11 @@ sourceClean(
   input.variables,
   output.variables = input.variables,
   passAllFunctions = FALSE,
-  input.functions = isoENV:::.findFunctions(),
+  input.functions = NULL,
+  packages.load.default = c("Stringendo", "ReadWriter", "CodeAndRoll2",
+    "MarkdownHelpers", "MarkdownReports", "Seurat.utils", "isoENV", "UVI.tools",
+    "Connectome.tools", "NestedMultiplexer"),
+  packages.load.custom = c("Seurat"),
   returnEnv = TRUE,
   removeBigObjs = TRUE,
   max.size = 1e+06,
@@ -28,6 +32,10 @@ returned to the global environment. Default = "input.variables".}
 those in input.functions.}
 
 \item{input.functions}{A character vector of global function names to be passed on if passAllFunctions is FALSE.}
+
+\item{packages.load.default}{Default set of packages (@vertesy) to load into the script's namespace.}
+
+\item{packages.load.custom}{Additional custom packages to load into the script's namespace.}
 
 \item{returnEnv}{Logical; if TRUE, assigns the script environment to the global environment.}
 

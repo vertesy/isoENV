@@ -9,7 +9,7 @@ sourceClean(
   input.variables,
   output.variables = input.variables,
   passAllFunctions = FALSE,
-  input.functions = .findFunctions(),
+  input.functions = isoENV:::.findFunctions(),
   returnEnv = TRUE,
   removeBigObjs = TRUE,
   max.size = 1e+06,

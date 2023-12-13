@@ -46,7 +46,11 @@
 #' }
 sourceClean <- function(
     path, input.variables, output.variables = input.variables,
-    passAllFunctions = FALSE, input.functions = .findFunctions(),
+    passAllFunctions = FALSE, input.functions = NULL,
+    packages.load = c("Stringendo", "ReadWriter", "CodeAndRoll2", "MarkdownHelpers"
+                     , "MarkdownReports", "Seurat.utils", "isoENV", "UVI.tools"
+                     , "Connectome.tools", "NestedMultiplexer"),
+    packages.library = NULL,
     returnEnv = TRUE, removeBigObjs = TRUE, max.size = 1e6,
     ...) {
   # Argument assertions
@@ -55,7 +59,7 @@ sourceClean <- function(
     is.character(input.variables),
     is.character(output.variables),
     "Either passAllFunctions OR give a character of fun names" =
-      passAllFunctions || is.character(input.functions)
+      isTRUE(passAllFunctions) || !is.null(input.functions) || !is.null(packages.load)
   )
   script_name <- basename(path)
 
@@ -83,10 +87,11 @@ sourceClean <- function(
   # Input Functions ----
 
   # Depending on the flag, either pass all functions or only specified ones
-  if (isFALSE(passAllFunctions)) {
-    if (length(input.functions) == 0) {
-      stop("input.functions must be provided if passAllFunctions is FALSE")
-    } else {
+  if (length(input.functions)) {
+    cat(111)
+    # if ( length(input.functions) == 0 && length(packages.load) == 0) {
+    #   stop("input.functions must be provided if passAllFunctions is FALSE")
+    # } else {
       if (checkmate::anyMissing(input.functions)) warning("Missing function!\n", immediate. = TRUE)
       objects.existing <- checkVars(input.functions, envir = globalenv(), prefix = "Missing FUNCTIONS!\n")
       obj.is.function <- sapply(objects.existing, function(x) is.function(get(x, envir = .GlobalEnv)))
@@ -98,26 +103,45 @@ sourceClean <- function(
         )
       }
       input.functions <- objects.existing[obj.is.function]
+      print(paste(length(input.functions), "input.functions"))
+    # }
+  }
+
+  # Load the package into the specified environment
+  if (length(packages.load)) {
+    cat('packages.load:')
+
+    for (pkg in packages.load) {
+      .importPackageFunctions(pkg, myEnv)
     }
   }
 
+  # Get functions to copy
   functions2pass <-
     if (passAllFunctions) {
       lsf.str(envir = .GlobalEnv)
-    } else {
+    } else if (length(input.functions)) {
       input.functions
+    } else if (length(packages.load)) {
+      # unlist(sapply(packages.load, function(pkg) {
+      #   ns <- tryCatch(getNamespace(pkg), error = function(e) NULL)
+      #   if (!is.null(ns)) lsf.str(envir = ns)
+      # }))
     }
 
   # Copy functions from the global environment to myEnv
-  functionsToPass <- mget(functions2pass, .GlobalEnv, ifnotfound = NA)
-  # functionsToPass <- Filter(Negate(is.na), functionsToPass)
-  list2env(functionsToPass, envir = myEnv)
+  if (length(functions2pass)) {
+    cat(head(functions2pass))
+    functionsToPass <- mget(functions2pass, .GlobalEnv, ifnotfound = NA)
+    # functionsToPass <- Filter(Negate(is.na), functionsToPass)
+    list2env(functionsToPass, envir = myEnv)
+  }
+  cat(222)
 
   # ________________________________________________________________________________________________
   # Source the script in myEnv
   source(file = path, local = myEnv, ...)
-
-
+  cat(11)
   # ________________________________________________________________________________________________
   # Output Variables ----
   output.variables.existing <- checkVars(output.variables, envir = myEnv, prefix = "Problematic OUTPUT!\n")
@@ -186,7 +210,8 @@ checkVars <- function(
 
   cat(
     "\n--------------------------------------------------------------------------------\n",
-    length(variables), "variables are checked for content in", substitute(variables), variables, suffix, "\n"
+    length(variables), "variables are checked for content in", substitute(variables)
+    , head(variables), "...", suffix, "\n"
   )
 
   wasProblem <- FALSE
@@ -327,8 +352,56 @@ checkVars <- function(
 }
 
 
-# ____________________________________________________________________
 
+# ____________________________________________________________________
+#' @title Find Functions in Specified Packages
+#'
+#' @description This function returns a list of all functions available in the specified packages.
+#' If a package is not loaded or does not exist, it is skipped.
+#'
+#' @param packages A character vector of package names.
+#'
+#' @return A list where each element is a character vector of function names for the corresponding package.
+#' Packages not loaded or non-existent are returned as `NULL`.
+#' @examples
+#' # Assuming the required packages are installed and loaded
+#' pkgs <- c("ggplot2", "dplyr")
+#' .findFunctions(pkgs)
+#' @export
+
+.findFunctions <- function(std_packages = c("ggplot")
+                           , custom_packages = c("Stringendo", "ReadWriter", "CodeAndRoll2", "MarkdownHelpers"
+                                                 , "MarkdownReports", "Seurat.utils", "isoENV", "UVI.tools"
+                                                 , "Connectome.tools", "NestedMultiplexer")
+                           , other_packages = NULL) {
+  stopifnot(is.character(std_packages),
+            is.character(custom_packages),
+            (is.character(other_packages) | is.null(other_packages) ) )
+  packages <- sort(unique(do.call(c, list(std_packages, custom_packages, other_packages))))
+  print(paste(length(packages), "packages are searched..."))
+
+  funs <- unlist(sapply(packages, function(pkg) {
+    ns <- tryCatch(getNamespace(pkg), error = function(e) NULL)
+    if (!is.null(ns)) {
+      lsf.str(envir = ns)
+    } else {
+      NULL
+    }
+  }, simplify = FALSE))
+
+  print(paste(length(funs), "functions are found."))
+  return(funs)
+}
+
+
+# ____________________________________________________________________
+.importPackageFunctions <- function(pkg, env) {
+  ns <- getNamespace(pkg)
+  exp_objs <- getNamespaceExports(pkg)
+  for (obj in exp_objs) {
+    assign(obj, get(obj, ns), envir = env)
+  }
+}
 
 
 # ______________________________________________________________________________________________----
@@ -407,47 +480,6 @@ checkGlobalVars <- function(f, silent = FALSE) {
   !any(found)
 }
 
-
-
-# ____________________________________________________________________
-#' @title Find Functions in Specified Packages
-#'
-#' @description This function returns a list of all functions available in the specified packages.
-#' If a package is not loaded or does not exist, it is skipped.
-#'
-#' @param packages A character vector of package names.
-#'
-#' @return A list where each element is a character vector of function names for the corresponding package.
-#' Packages not loaded or non-existent are returned as `NULL`.
-#' @examples
-#' # Assuming the required packages are installed and loaded
-#' pkgs <- c("ggplot2", "dplyr")
-#' .findFunctions(pkgs)
-#' @export
-
-.findFunctions <- function(std_packages = c("tidyverse")
-                           , custom_packages = c("Stringendo", "ReadWriter", "CodeAndRoll2", "MarkdownHelpers"
-                                        , "MarkdownReports", "Seurat.utils", "isoENV", "UVI.tools"
-                                        , "Connectome.tools", "NestedMultiplexer")
-                           , other_packages = NULL) {
-  stopifnot(is.character(std_packages),
-            is.character(custom_packages),
-            (is.character(other_packages) | is.null(other_packages) ) )
-  packages <- sort(unique(do.call(c, list(std_packages, vertesy_packages, other_packages))))
-  print(paste(length(packages), "packages are searched..."))
-
-  funs <- unlist(sapply(packages, function(pkg) {
-    ns <- tryCatch(getNamespace(pkg), error = function(e) NULL)
-    if (!is.null(ns)) {
-      lsf.str(envir = ns)
-    } else {
-      NULL
-    }
-  }, simplify = FALSE))
-
-  print(paste(length(funs), "functions are found."))
-  return(funs)
-}
 
 
 

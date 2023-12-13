@@ -5,7 +5,7 @@
 \title{Find Functions in Specified Packages}
 \usage{
 .findFunctions(
-  std_packages = c("tidyverse"),
+  std_packages = c("ggplot"),
   custom_packages = c("Stringendo", "ReadWriter", "CodeAndRoll2", "MarkdownHelpers",
     "MarkdownReports", "Seurat.utils", "isoENV", "UVI.tools", "Connectome.tools",
     "NestedMultiplexer"),

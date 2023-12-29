@@ -20,13 +20,14 @@
 #'
 #' @param path The file path of the R script to be sourced.
 #' @param input.variables A character vector of global variable names to be passed on.
+# #' @param input.variables.default A predefined list of global variable names to be passed on.
 #' @param output.variables A character vector of variable names from the sourced environment to be
 #' returned to the global environment. Default = "input.variables".
 #' @param passAllFunctions Logical; if TRUE, all global functions are passed on, otherwise only
 #' those in input.functions.
 #' @param input.functions A character vector of global function names to be passed on if passAllFunctions is FALSE.
 #' @param packages.load.default Default set of packages (@vertesy) to load into the script's namespace.
-#' @param packages.load.custom Additional custom packages to load into the script's namespace.
+#' @param packages.load Additional custom packages to load into the script's namespace.
 #' @param returnEnv Logical; if TRUE, assigns the script environment to the global environment.
 #' @param removeBigObjs Logical; if TRUE, cleans the script environment from big objects, and
 #' return the remaing env to the global environment.
@@ -47,17 +48,23 @@
 #' )
 #' }
 sourceClean <- function(
-    path, input.variables, output.variables = input.variables,
+    path, input.variables,
+    # input.variables.default = "OutDir, OutDirOrig",
+    output.variables = input.variables,
     passAllFunctions = FALSE, input.functions = NULL,
-    packages.load.default = c("Stringendo", "ReadWriter", "CodeAndRoll2", "MarkdownHelpers"
-                     , "MarkdownReports", "Seurat.utils", "isoENV", "UVI.tools"
-                     , "Connectome.tools", "NestedMultiplexer"),
-    packages.load.custom = c("Seurat"),
+    packages.load = c("Seurat"),
+    packages.load.default = c(
+      "utils", "grDevices", "graphics", "stats", "methods"
+      , "Seurat"
+      ,"Stringendo", "ReadWriter", "CodeAndRoll2", "MarkdownHelpers"
+      , "MarkdownReports", "ggExpress", "Seurat.utils", "isoENV", "UVI.tools"
+      , "Connectome.tools", "NestedMultiplexer"),
     # packages.library = NULL,
     returnEnv = TRUE, removeBigObjs = TRUE, max.size = 1e6,
     ...) {
+  tictoc::tic()
 
-  all.packages.load <- union(packages.load.default, packages.load.custom)
+  all.packages.load <- union(packages.load.default, packages.load)
 
   # Argument assertions
   stopifnot(
@@ -72,7 +79,7 @@ sourceClean <- function(
   # ________________________________________________________________________________________________
   # Input Variables ----
 
-  objects.existing <- checkVars(input.variables, envir = globalenv(), prefix = "Problematic INPUT!\n")
+  objects.existing <- checkVars(input.variables, envir = globalenv(), prefix = "Problematic INPUT!\n", )
   obj.is.function <- sapply(objects.existing, function(x) is.function(get(x, envir = .GlobalEnv)))
   if (any(obj.is.function)) {
     xm <- cat(
@@ -81,7 +88,7 @@ sourceClean <- function(
     )
   }
 
-  # Create new environment that do,es not see .GlobalEnv (not it's parent)/
+  # Create new environment that do,es not see .GlobalEnv (not it's parent).
   myEnv <- new.env(parent = baseenv())
 
   # Copy specified global variables to myEnv
@@ -155,6 +162,7 @@ sourceClean <- function(
     assign(x = env.name, value = myEnv, envir = .GlobalEnv)
     cat(">> Script local environment is returned as:", env.name, "\n")
   }
+  tictoc::toc()
   # return(myEnv)
 }
 
@@ -212,6 +220,7 @@ checkVars <- function(
     if (!exists(var, envir = envir)) {
       warning(var, " is missing", immediate. = TRUE)
       wasProblem <- TRUE
+      stop(paste("Variable", varx, "is not found in global environment!"))
     } else {
       value <- get(var, envir = envir)
       if (is.function(value)) {

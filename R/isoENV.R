@@ -55,7 +55,7 @@ sourceClean <- function(
     packages.load = c("Seurat"),
     packages.load.default = c(
       "utils", "grDevices", "graphics", "stats", "methods"
-      , "Seurat"
+      , "ggplot2"
       ,"Stringendo", "ReadWriter", "CodeAndRoll2", "MarkdownHelpers"
       , "MarkdownReports", "ggExpress", "Seurat.utils", "isoENV", "UVI.tools"
       , "Connectome.tools", "NestedMultiplexer"),
@@ -75,6 +75,9 @@ sourceClean <- function(
       isTRUE(passAllFunctions) || !is.null(input.functions) || !is.null(all.packages.load)
   )
   script_name <- basename(path)
+  input.variables <- trimws(input.variables)
+  input.functions <- trimws(input.functions)
+  output.variables <- trimws(output.variables)
 
   # ________________________________________________________________________________________________
   # Input Variables ----
@@ -138,21 +141,27 @@ sourceClean <- function(
     list2env(functionsToPass, envir = myEnv)
   }
 
+
   # ________________________________________________________________________________________________
   # Source the script in myEnv
   source(file = path, local = myEnv, ...)
   # ________________________________________________________________________________________________
   # Output Variables ----
-  output.variables.existing <- checkVars(output.variables, envir = myEnv, prefix = "Problematic OUTPUT!\n")
-
+  print(paste("output.variables", output.variables))
+  output.variables.existing <- checkVars(output.variables, envir = myEnv, verbose = T,
+                                         x=2,
+                                         prefix = "Problematic OUTPUT!\n")
+  missing <- setdiff(output.variables, output.variables.existing)
+  if(length(missing > 0 )) print(paste('missing', missing))
+  print(paste("output.variables.existing", output.variables.existing))
   # ________________________________________________________________________________________________
   # Output Functions ----
   "Output Functions are not checked atm."
 
   # Copy specified myEnv variables back to .GlobalEnv
   varsOut <- mget(output.variables.existing, envir = myEnv, ifnotfound = NA)
-  varsOut <- Filter(Negate(is.na), varsOut)
-  cat(">> Returning:", output.variables.existing, "from", script_name, "\n")
+  # varsOut <- Filter(Negate(is.na), varsOut) # this line caused unexpected
+  cat(">> Returning:", names(varsOut), "from", script_name, "\n")
   list2env(varsOut, envir = .GlobalEnv)
 
   if (returnEnv) {
@@ -202,8 +211,9 @@ sourceClean <- function(
 #' @export
 checkVars <- function(
     variables, envir, verbose = FALSE,
-    prefix = "Problematic variables!\n", suffix = NULL) {
+    prefix = "Problematic variables!\n", suffix = NULL, x=1) {
   stopifnot(is.character(variables), is.environment(envir))
+  env.name <- as.character(substitute(envir))
 
   # filter out functions that should be returned!
   # variables <- isoENV:::.filterFunctionsFromObjNames(variables, envir = envir)
@@ -220,7 +230,7 @@ checkVars <- function(
     if (!exists(var, envir = envir)) {
       warning(var, " is missing", immediate. = TRUE)
       wasProblem <- TRUE
-      stop(paste("Variable", varx, "is not found in global environment!"))
+      stop(paste("Variable", varx, "is not found in the", env.name, "environment!"))
     } else {
       value <- get(var, envir = envir)
       if (is.function(value)) {
@@ -242,15 +252,17 @@ checkVars <- function(
         warning(var, " contains Inf values", immediate. = TRUE)
         wasProblem <- TRUE
       } else if (verbose) {
-        message(var, " is defined and not empty", immediate. = TRUE)
-        wasProblem <- TRUE
+        message(var, " is defined and not empty")
+        wasProblem <- FALSE # no problem
       }
     }
   } # for
 
   if (!is.null(prefix) && wasProblem) cat(as.character(prefix), fill = TRUE)
 
-  variables.existing <- variables[sapply(variables, exists)]
+  variables.existing <- variables[sapply(variables, exists, envir = envir)]
+  iprint()
+  print(paste(length(variables.existing), "variables.existing:", head(variables.existing), collapse = " "))
   return(variables.existing)
 }
 
@@ -327,28 +339,27 @@ checkVars <- function(
   # Get the names and sizes of the objects in env
   obj_names <- ls(envir = env)
   obj_sizes <- sapply(obj_names, function(x) object.size(get(x, envir = env)))
+  obj_sizes <- sort(obj_sizes, decreasing = T)
 
   # Filter the names of the objects that are bigger than max.size
-  big_objs <- obj_names[obj_sizes > max.size]
+  big_objs <- names(obj_sizes)[obj_sizes > max.size]
 
   # Remove the big objects from env
   rm(list = big_objs, envir = env)
 
   # Warn the user about the names of the objects that were removed
   if (length(big_objs) > 0) {
-    warning(paste(
-      "Objects were bigger than and",
+    message(paste(length(big_objs),
+      "objects were bigger than",
       format(max.size, scientific = FALSE, big.mark = ","), "bytes are removed from",
       substitute(env), "\n",
-      paste(big_objs, collapse = ", ")
+      paste(head(big_objs), collapse = ", ")
     ))
   }
-
-  # Return the modified environment
-  return(env)
-
   # Output assertion
   stopifnot(is.environment(env))
+
+  # Return the modified environment
   return(env)
 }
 

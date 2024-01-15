@@ -9,7 +9,8 @@ checkVars(
   envir,
   verbose = FALSE,
   prefix = "Problematic variables!\\n",
-  suffix = NULL
+  suffix = NULL,
+  x = 1
 )
 }
 \arguments{

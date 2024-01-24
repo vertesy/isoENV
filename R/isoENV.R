@@ -457,40 +457,6 @@ strict <- function(f1, ...){
 
 
 
-# ____________________________________________________________________
-#' @title Check for Use of Global Variables in a Function
-#'
-#' @description This function checks whether the specified function (`f`) uses any global variables.
-#' It returns `TRUE` if no global variables are used, and `FALSE` otherwise. If global variables are found
-#' and `silent` is `FALSE`, a warning is issued listing the global variables.
-#'
-#' @param f The function to be checked for global variable usage.
-#' @param silent Logical parameter with a default value of `FALSE`.
-#' If `TRUE`, the function suppresses warnings about global variable usage.
-#' @importFrom codetools findGlobals
-#' @return Returns `TRUE` if no global variables are used in the function `f`, `FALSE` otherwise.
-#' If `silent` is `FALSE` and global variables are found, a warning is issued.
-#' @export
-#'
-#' @examples
-#' testFunction <- function(x, y) { z <- x + y; return(z) }
-#' checkGlobalVars(testFunction)
-#' checkGlobalVars(testFunction, silent = TRUE)
-checkGlobalVars <- function(f, silent = FALSE) {
-
-  stopifnot(is.function(f), is.logical(silent))
-
-   if (!requireNamespace("codetools", quietly = TRUE)) {
-    stop("Please install codetools, using install.packages('codetools')")
-  }
-  vars <- codetools::findGlobals(f)
-  found <- !vapply(vars, exists, logical(1), envir=as.environment(2))
-  if (!silent && any(found)) {
-    warning("global variables used: ", paste(names(found)[found], collapse=', '))
-    return(invisible(FALSE))
-  }
-  !any(found)
-}
 
 
 

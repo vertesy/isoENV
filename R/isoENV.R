@@ -80,7 +80,7 @@ sourceClean <- function(
   output.variables <- trimws(output.variables)
 
   # ________________________________________________________________________________________________
-  # Input Variables ----
+  #. Input Variables ----
 
   objects.existing <- checkVars(input.variables, envir = globalenv(), prefix = "Problematic INPUT!\n", )
   obj.is.function <- sapply(objects.existing, function(x) is.function(get(x, envir = .GlobalEnv)))
@@ -100,7 +100,7 @@ sourceClean <- function(
   list2env(vars, envir = myEnv)
 
   # ________________________________________________________________________________________________
-  # Input Functions ----
+  #. Input Functions ----
 
   # Depending on the flag, either pass all functions or only specified ones
   if (length(input.functions)) {
@@ -141,12 +141,12 @@ sourceClean <- function(
     list2env(functionsToPass, envir = myEnv)
   }
 
-
   # ________________________________________________________________________________________________
   # Source the script in myEnv
   source(file = path, local = myEnv, ...)
+
   # ________________________________________________________________________________________________
-  # Output Variables ----
+  #. Output Variables ----
   print(paste("output.variables", output.variables))
   output.variables.existing <- checkVars(output.variables, envir = myEnv, verbose = T,
                                          x=2,
@@ -155,7 +155,7 @@ sourceClean <- function(
   if(length(missing > 0 )) print(paste('missing', missing))
   print(paste("output.variables.existing", output.variables.existing))
   # ________________________________________________________________________________________________
-  # Output Functions ----
+  #. Output Functions ----
   "Output Functions are not checked atm."
 
   # Copy specified myEnv variables back to .GlobalEnv

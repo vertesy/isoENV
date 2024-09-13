@@ -143,6 +143,7 @@ sourceClean <- function(
 
   # ________________________________________________________________________________________________
   # Source the script in myEnv
+  message(">>> Sourcing script in an isolated environment...")
   source(file = path, local = myEnv, ...)
 
   # ________________________________________________________________________________________________
@@ -230,7 +231,7 @@ checkVars <- function(
     if (!exists(var, envir = envir)) {
       warning(var, " is missing", immediate. = TRUE)
       wasProblem <- TRUE
-      stop(paste("Variable", varx, "is not found in the", env.name, "environment!"))
+      stop(paste("Variable", var, "is not found in the", env.name, "environment!"))
     } else {
       value <- get(var, envir = envir)
       if (is.function(value)) {
@@ -267,7 +268,7 @@ checkVars <- function(
 }
 
 # ______________________________________________________________________________________________----
-# 3. Private Helper Functions  ----
+# 3. Private Helpers  ----
 # ____________________________________________________________________
 
 #' Check Names for Variable or Function Type

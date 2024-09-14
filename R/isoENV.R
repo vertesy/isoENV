@@ -82,8 +82,11 @@ sourceClean <- function(
   # ________________________________________________________________________________________________
   #. Input Variables ----
 
+  print("Checking if input.variables exist:")
+  print(sapply(input.variables, exists))
   objects.existing <- checkVars(input.variables, envir = globalenv(), prefix = "Problematic INPUT!\n", )
   obj.is.function <- sapply(objects.existing, function(x) is.function(get(x, envir = .GlobalEnv)))
+
   if (any(obj.is.function)) {
     xm <- cat(
       "FUNCTIONS passed to input.variables:", objects.existing[obj.is.function],
@@ -147,22 +150,23 @@ sourceClean <- function(
   source(file = path, local = myEnv, ...)
 
   # ________________________________________________________________________________________________
-  #. Output Variables ----
-  print(paste("output.variables", output.variables))
-  output.variables.existing <- checkVars(output.variables, envir = myEnv, verbose = T,
-                                         x=2,
-                                         prefix = "Problematic OUTPUT!\n")
-  missing <- setdiff(output.variables, output.variables.existing)
-  if(length(missing > 0 )) print(paste('missing', missing))
-  print(paste("output.variables.existing", output.variables.existing))
-  # ________________________________________________________________________________________________
   #. Output Functions ----
   "Output Functions are not checked atm."
 
+  # ________________________________________________________________________________________________
+  #. Output Variables ----
+  print(paste("output.variables", output.variables))
+  output.variables.existing <- checkVars(output.variables, envir = myEnv, verbose = T,
+                                         x=2, prefix = "Problematic OUTPUT!\n")
+  missing <- setdiff(output.variables, output.variables.existing)
+  if(length(missing > 0 )) print(paste('missing', missing))
+  # print(paste("output.variables.existing", output.variables.existing))
+
+
   # Copy specified myEnv variables back to .GlobalEnv
   varsOut <- mget(output.variables.existing, envir = myEnv, ifnotfound = NA)
-  # varsOut <- Filter(Negate(is.na), varsOut) # this line caused unexpected
-  cat(">> Returning:", names(varsOut), "from", script_name, "\n")
+
+  cat(">> Returning:", length(varsOut), "variables from", script_name, "\n")
   list2env(varsOut, envir = .GlobalEnv)
 
   if (returnEnv) {
@@ -238,22 +242,22 @@ checkVars <- function(
         # cat(var, "is a function, skipping...\n")
         next
       } else if (is.null(value)) {
-        warning(var, " is NULL", immediate. = TRUE)
+        warning(var, " is NULL.", immediate. = TRUE)
         wasProblem <- TRUE
       } else if (identical(value, NA)) {
-        warning(var, " is NA", immediate. = TRUE)
+        warning(var, " is NA.", immediate. = TRUE)
         wasProblem <- TRUE
       } else if (length(value) == 0) {
-        warning(var, " is empty", immediate. = TRUE)
+        warning(var, " is empty.", immediate. = TRUE)
         wasProblem <- TRUE
       } else if (is.numeric(value) && any(is.nan(value))) {
-        warning(var, " contains NaN values", immediate. = TRUE)
+        warning(var, " contains NaN values.", immediate. = TRUE)
         wasProblem <- TRUE
       } else if (is.numeric(value) && any(is.infinite(value))) {
-        warning(var, " contains Inf values", immediate. = TRUE)
+        warning(var, " contains Inf values.", immediate. = TRUE)
         wasProblem <- TRUE
       } else if (verbose) {
-        message(var, " is defined and not empty")
+        message(var, " is defined and not empty.")
         wasProblem <- FALSE # no problem
       }
     }
@@ -263,7 +267,7 @@ checkVars <- function(
 
   variables.existing <- variables[sapply(variables, exists, envir = envir)]
   iprint()
-  print(paste(length(variables.existing), "variables.existing:", head(variables.existing), collapse = " "))
+  print(paste(length(variables.existing), "of", length(variables), "variables exist.", collapse = " ")) #  head(variables.existing)
   return(variables.existing)
 }
 

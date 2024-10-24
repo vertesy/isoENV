@@ -1,4 +1,6 @@
 # Configuration for the Package
+# file.edit("~/GitHub/Packages/XXXXXXXXXX/Development/config.R")
+
 DESCRIPTION <- list(
   package.name = "isoENV",
   version = "0.2.0",

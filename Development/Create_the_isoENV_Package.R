@@ -10,6 +10,7 @@ devtools::load_all("~/GitHub/Packages/PackageTools/")
 
 # Setup ------------------------
 repository.dir <- "~/GitHub/Packages/isoENV/"
+(package.name <- basename(repository.dir))
 config.path <- file.path(repository.dir, "Development/config.R")
 
 "TAKE A LOOK AT"
@@ -58,7 +59,7 @@ PackageTools::extract_package_dependencies(repository.dir)
 
 # Try to find and add missing @importFrom statements------------------------------------------------
 devtools::load_all("~/GitHub/Packages/PackageTools/")
-(ls.scripts.full.path <- list.files(file.path(repository.dir, "R"), full.names = T, pattern = .R$))
+(ls.scripts.full.path <- list.files(file.path(repository.dir, "R"), full.names = T, pattern = '.R$'))
 if (F) {
   (excluded.packages <- unlist(strsplit(DESCRIPTION$'depends', split = ", ")))
   for (scriptX in ls.scripts.full.path) {
@@ -68,16 +69,26 @@ if (F) {
 
 
 # Generate the list of functions ------------------------------------------------
+(ls.scripts.full.path <- list.files(file.path(repository.dir, "R"), full.names = T, pattern = '.R$'))
 for (scriptX in ls.scripts.full.path) {
   PackageTools::list_of_funs_to_markdown(scriptX)
 }
+file.edit(paste0(repository.dir, "R/list.of.functions.in.", package.name, ".det.md"))
+file.edit(paste0(repository.dir, "README.md"))
+file.remove(paste0(repository.dir, "/R/list.of.functions.in.", package.name, ".det.md"))
 
+r$PackageTools()
 PackageTools::copy_github_badge("active") # Add badge to readme via clipboard
+file.edit(paste0(repository.dir, "README.md"))
 
 
 # Replaces T with TRUE and F with FALSE ------------------------------------------------
+(ls.scripts.full.path <- list.files(file.path(repository.dir, "R"), full.names = T, pattern = '.R$'))
 for (scriptX in ls.scripts.full.path) {
   PackageTools::replace_tf_with_true_false(scriptX)
+  PackageTools::replace_short_calls(scriptX)
 }
+
+
 
 

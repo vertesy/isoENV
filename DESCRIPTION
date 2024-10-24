@@ -1,7 +1,7 @@
 Package: isoENV
 Title: Tools to work with isolated environments for in-memory pipelines in
     R.
-Version: 0.2.0
+Version: 0.3.0
 Authors@R: 
     person("Abel", "Vertesy", , "av@imba.oeaw.ac.at", role = c("aut", "cre"))
 Author: Abel Vertesy <av@imba.oeaw.ac.at> [aut, cre]
@@ -15,8 +15,9 @@ Depends:
     Stringendo
 Imports: 
     sessioninfo,
-    stats
+    stats,
+    tictoc
 Encoding: UTF-8
-Packaged: 2023-11-27 11:26:28.291256
+Packaged: 2024-10-24 16:45:50.817766
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.1

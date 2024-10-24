@@ -9,8 +9,7 @@ checkVars(
   envir,
   verbose = FALSE,
   prefix = "Problematic variables!\\n",
-  suffix = NULL,
-  x = 1
+  suffix = NULL
 )
 }
 \arguments{
@@ -20,7 +19,9 @@ checkVars(
 
 \item{verbose}{Report on good (passing) variables.}
 
-\item{suffix}{Suffix to append to printed summary statment.}
+\item{prefix}{Prefix to append to printed summary statement.}
+
+\item{suffix}{Suffix to append to printed summary statement.}
 }
 \value{
 No return value, called for side effects.

@@ -175,17 +175,27 @@ z <- 33
 
 
 
+## List of Functions in isoENV (7) 
+Updated: 2024/10/24 16:38
+- #### 1 `sourceClean()`
+Source a script with strict environment control. This function sources a script file into a new environment. It can selectively import variables  and functions from the global environment and return specified variables back to the global environment. 
 
+- #### 2 `checkVars()`
+Check Variables in an Environment. This function iterates over a list of variable names and checks their  existence and value in a given environment. It issues warnings for variables  that are missing, NULL, NA, NaN, infinite, or empty, and sends a message for  variables that are defined and not empty. 
 
-## List of Functions
+- #### 3 `.filterFunctionsFromObjNames()`
+Check Names for Variable or Function Type. This function takes a character vector of object names and checks whether  they correspond to variables or functions within the provided environment.  It issues warnings for function names and for missing objects, and returns a list of variable names. 
 
-Updated: 2023/11/10
+- #### 4 `.removeBigObjsFromEnv()`
+Remove large objects from an environment. This function removes objects from the specified environment that exceed a certain size.
 
-- ##### `sourceClean()`
-Source a script with strict environment control
+- #### 5 `.findFunctions()`
+Find Functions in Specified Packages. This function returns a list of all functions available in the specified packages.  If a package is not loaded or does not exist, it is skipped. 
 
-- ##### `checkVars()`
-Check Variables in an Environment
+- #### 6 `.importPackageFunctions()`
+Import all exported functions from a package into an environment.   The `.importPackageFunctions()` function imports all exported objects from a specified package  into a given environment. This can be useful when you want to have direct access to all functions  of a package without explicitly calling the package name in each call. 
 
-- ##### `removeAllExceptFunctions()`
+- #### 7 `removeAllExceptFunctions()`
 Removes all objects that are not functions from the specified environment.
+
+

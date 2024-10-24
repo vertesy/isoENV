@@ -7,7 +7,7 @@
 removeAllExceptFunctions(envir = .GlobalEnv)
 }
 \arguments{
-\item{env}{environment from which to remove the variables, defaulting to the global environment.}
+\item{envir}{environment from which to remove the variables, defaulting to the global environment.}
 }
 \value{
 Nothing, but modifies the environment in place.
@@ -16,6 +16,7 @@ Nothing, but modifies the environment in place.
 Removes all objects that are not functions from the specified environment.
 }
 \examples{
+
 # Define some variables and functions in the global environment
 x <- 1
 y <- "a"
@@ -33,4 +34,5 @@ removeAllExceptFunctions()
 # Check the names of the objects in the global environment again
 ls()
 # [1] "f" "g"
+
 }

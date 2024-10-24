@@ -25,8 +25,12 @@ which can help in debugging and ensuring that all variables are defined before f
 \examples{
 # Define a sample function
 Z <- 2
-funOK <- function(x, y) { x + y }
-funBAD <- function(x, y) { x + Z }
+funOK <- function(x, y) {
+  x + y
+}
+funBAD <- function(x, y) {
+  x + Z
+}
 funOKwoParenthesis <- function(x, y) x + 1
 
 # Check strict evaluation

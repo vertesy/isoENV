@@ -16,13 +16,15 @@
 # ____________________________________________________________________
 
 # ______________________________________________________________________________________________----
-#' Remove Non-function Objects
+#' @title Remove Non-function Objects
 #'
-#' Removes all objects that are not functions from the specified environment.
+#' @description Removes all objects that are not functions from the specified environment.
 #'
-#' @param env environment from which to remove the variables, defaulting to the global environment.
+#' @param envir environment from which to remove the variables, defaulting to the global environment.
+#'
 #' @return Nothing, but modifies the environment in place.
 #' @examples
+#'
 #' # Define some variables and functions in the global environment
 #' x <- 1
 #' y <- "a"
@@ -40,6 +42,7 @@
 #' # Check the names of the objects in the global environment again
 #' ls()
 #' # [1] "f" "g"
+#'
 #' @export
 removeAllExceptFunctions <- function(envir = .GlobalEnv) {
   to_remove <- setdiff(ls(envir = envir), lsf.str(envir = envir))

@@ -13,9 +13,9 @@
 
 
 # ________________________________________________________________________________________________
-#' Source a script with strict environment control
+#' @title Source a script with strict environment control
 #'
-#' This function sources a script file into a new environment. It can selectively import variables
+#' @description This function sources a script file into a new environment. It can selectively import variables
 #' and functions from the global environment and return specified variables back to the global environment.
 #'
 #' @param path The file path of the R script to be sourced.
@@ -54,11 +54,12 @@ sourceClean <- function(
     passAllFunctions = FALSE, input.functions = NULL,
     packages.load = c("Seurat"),
     packages.load.default = c(
-      "utils", "grDevices", "graphics", "stats", "methods"
-      , "ggplot2"
-      ,"Stringendo", "ReadWriter", "CodeAndRoll2", "MarkdownHelpers"
-      , "MarkdownReports", "ggExpress", "Seurat.utils", "isoENV", "UVI.tools"
-      , "Connectome.tools", "NestedMultiplexer"),
+      "utils", "grDevices", "graphics", "stats", "methods",
+      "ggplot2",
+      "Stringendo", "ReadWriter", "CodeAndRoll2", "MarkdownHelpers",
+      "MarkdownReports", "ggExpress", "Seurat.utils", "isoENV", "UVI.tools",
+      "Connectome.tools", "NestedMultiplexer"
+    ),
     # packages.library = NULL,
     returnEnv = TRUE, removeBigObjs = TRUE, max.size = 1e6,
     ...) {
@@ -80,7 +81,7 @@ sourceClean <- function(
   output.variables <- trimws(output.variables)
 
   # ________________________________________________________________________________________________
-  #. Input Variables ----
+  # . Input Variables ----
 
   print("Checking if input.variables exist:")
   print(sapply(input.variables, exists))
@@ -103,7 +104,7 @@ sourceClean <- function(
   list2env(vars, envir = myEnv)
 
   # ________________________________________________________________________________________________
-  #. Input Functions ----
+  # . Input Functions ----
 
   # Depending on the flag, either pass all functions or only specified ones
   if (length(input.functions)) {
@@ -150,16 +151,18 @@ sourceClean <- function(
   source(file = path, local = myEnv, ...)
 
   # ________________________________________________________________________________________________
-  #. Output Functions ----
+  # . Output Functions ----
   "Output Functions are not checked atm."
 
   # ________________________________________________________________________________________________
-  #. Output Variables ----
+  # . Output Variables ----
   print(paste("output.variables", output.variables))
-  output.variables.existing <- checkVars(output.variables, envir = myEnv, verbose = T,
-                                         x=2, prefix = "Problematic OUTPUT!\n")
+  output.variables.existing <- checkVars(output.variables,
+    envir = myEnv, verbose = TRUE,
+    x = 2, prefix = "Problematic OUTPUT!\n"
+  )
   missing <- setdiff(output.variables, output.variables.existing)
-  if(length(missing > 0 )) print(paste('missing', missing))
+  if (length(missing > 0)) print(paste("missing", missing))
   # print(paste("output.variables.existing", output.variables.existing))
 
 
@@ -193,9 +196,9 @@ sourceClean <- function(
 # 3. Helpers  ----
 # ____________________________________________________________________
 
-#' Check Variables in an Environment
+#' @title Check Variables in an Environment
 #'
-#' This function iterates over a list of variable names and checks their
+#' @description This function iterates over a list of variable names and checks their
 #' existence and value in a given environment. It issues warnings for variables
 #' that are missing, NULL, NA, NaN, infinite, or empty, and sends a message for
 #' variables that are defined and not empty.
@@ -203,7 +206,9 @@ sourceClean <- function(
 #' @param variables A character vector of variable names to check.
 #' @param envir The environment in which to look for the variables.
 #' @param verbose Report on good (passing) variables.
-#' @param suffix Suffix to append to printed summary statment.
+#' @param prefix Prefix to append to printed summary statement.
+#' @param suffix Suffix to append to printed summary statement.
+#'
 #' @return No return value, called for side effects.
 #' @examples
 #' myEnv <- new.env()
@@ -216,7 +221,8 @@ sourceClean <- function(
 #' @export
 checkVars <- function(
     variables, envir, verbose = FALSE,
-    prefix = "Problematic variables!\n", suffix = NULL, x=1) {
+    prefix = "Problematic variables!\n",
+    suffix = NULL) {
   stopifnot(is.character(variables), is.environment(envir))
   env.name <- as.character(substitute(envir))
 
@@ -225,8 +231,8 @@ checkVars <- function(
 
   cat(
     "\n--------------------------------------------------------------------------------\n",
-    length(variables), "variables are checked for content in", substitute(variables)
-    , head(variables), "...", suffix, "\n"
+    length(variables), "variables are checked for content in", substitute(variables),
+    head(variables), "...", suffix, "\n"
   )
 
   wasProblem <- FALSE
@@ -275,9 +281,9 @@ checkVars <- function(
 # 3. Private Helpers  ----
 # ____________________________________________________________________
 
-#' Check Names for Variable or Function Type
+#' @title Check Names for Variable or Function Type
 #'
-#' This function takes a character vector of object names and checks whether
+#' @description This function takes a character vector of object names and checks whether
 #' they correspond to variables or functions within the provided environment.
 #' It issues warnings for function names and for missing objects, and returns a list of variable names.
 #'
@@ -319,9 +325,9 @@ checkVars <- function(
 
 
 # ____________________________________________________________________
-#' Remove large objects from an environment
+#' @title Remove large objects from an environment
 #'
-#' This function removes objects from the specified environment that exceed a certain size.
+#' @description This function removes objects from the specified environment that exceed a certain size.
 #' @param env an environment from which large objects should be removed.
 #' @param max.size a numeric value specifying the maximum size of an objects to keep in the env, in bytes.
 #' @return The modified environment with large objects removed.
@@ -344,7 +350,7 @@ checkVars <- function(
   # Get the names and sizes of the objects in env
   obj_names <- ls(envir = env)
   obj_sizes <- sapply(obj_names, function(x) object.size(get(x, envir = env)))
-  obj_sizes <- sort(obj_sizes, decreasing = T)
+  obj_sizes <- sort(obj_sizes, decreasing = TRUE)
 
   # Filter the names of the objects that are bigger than max.size
   big_objs <- names(obj_sizes)[obj_sizes > max.size]
@@ -354,7 +360,8 @@ checkVars <- function(
 
   # Warn the user about the names of the objects that were removed
   if (length(big_objs) > 0) {
-    message(paste(length(big_objs),
+    message(paste(
+      length(big_objs),
       "objects were bigger than",
       format(max.size, scientific = FALSE, big.mark = ","), "bytes are removed from",
       substitute(env), "\n",
@@ -376,7 +383,9 @@ checkVars <- function(
 #' @description This function returns a list of all functions available in the specified packages.
 #' If a package is not loaded or does not exist, it is skipped.
 #'
-#' @param packages A character vector of package names.
+#' @param std_packages A character vector of standard packages to search through for functions.
+#' @param custom_packages A character vector of custom packages to search through for functions.
+#' @param other_packages A character vector of other packages to search through for functions.
 #'
 #' @return A list where each element is a character vector of function names for the corresponding package.
 #' Packages not loaded or non-existent are returned as `NULL`.
@@ -386,14 +395,19 @@ checkVars <- function(
 #' .findFunctions(pkgs)
 #' @export
 
-.findFunctions <- function(std_packages = c("ggplot")
-                           , custom_packages = c("Stringendo", "ReadWriter", "CodeAndRoll2", "MarkdownHelpers"
-                                                 , "MarkdownReports", "Seurat.utils", "isoENV", "UVI.tools"
-                                                 , "Connectome.tools", "NestedMultiplexer")
-                           , other_packages = NULL) {
-  stopifnot(is.character(std_packages),
-            is.character(custom_packages),
-            (is.character(other_packages) | is.null(other_packages) ) )
+.findFunctions <- function(
+    std_packages = c("ggplot"),
+    custom_packages = c(
+      "Stringendo", "ReadWriter", "CodeAndRoll2", "MarkdownHelpers",
+      "MarkdownReports", "Seurat.utils", "isoENV", "UVI.tools",
+      "Connectome.tools", "NestedMultiplexer"
+    ),
+    other_packages = NULL) {
+  stopifnot(
+    is.character(std_packages),
+    is.character(custom_packages),
+    (is.character(other_packages) | is.null(other_packages))
+  )
   packages <- sort(unique(do.call(c, list(std_packages, custom_packages, other_packages))))
   print(paste(length(packages), "packages are searched..."))
 
@@ -412,9 +426,34 @@ checkVars <- function(
 
 
 # ____________________________________________________________________
+#' @title Import all exported functions from a package into an environment
+#'
+#' @description
+#' The `.importPackageFunctions()` function imports all exported objects from a specified package
+#' into a given environment. This can be useful when you want to have direct access to all functions
+#' of a package without explicitly calling the package name in each call.
+#'
+#' @param pkg A character string specifying the name of the package to import functions from.
+#'   Default: none.
+#' @param env The environment where the functions should be imported. Default: none.
+#'
+#' @return This function does not return a value but imports the exported objects from the package
+#'   into the specified environment.
+#'
+#' @noRd
+#'
 .importPackageFunctions <- function(pkg, env) {
+
+  stopifnot(
+    is.character(pkg) && length(pkg) == 1,  # 'pkg' must be a single string
+    is.environment(env)                     # 'env' must be an environment
+  )
+
+  # Get the namespace and all exported objects from the package
   ns <- getNamespace(pkg)
   exp_objs <- getNamespaceExports(pkg)
+
+  # Import each object into the specified environment
   for (obj in exp_objs) {
     assign(obj, get(obj, ns), envir = env)
   }
@@ -442,22 +481,28 @@ checkVars <- function(
 #' @examples
 #' # Define a sample function
 #' Z <- 2
-#' funOK <- function(x, y) { x + y }
-#' funBAD <- function(x, y) { x + Z }
+#' funOK <- function(x, y) {
+#'   x + y
+#' }
+#' funBAD <- function(x, y) {
+#'   x + Z
+#' }
 #' funOKwoParenthesis <- function(x, y) x + 1
 #'
 #' # Check strict evaluation
 #' strict(funOK, 1, 2)
 #' strict(funBAD, 1, 2)
 #' strict(funOKwoParenthesis, 1, 2)
-strict <- function(f1, ...){
+strict <- function(f1, ...) {
   function_text <- deparse(f1)
-  function_text <- paste(function_text[1], function_text[2]
-                         , paste(function_text[c(-1, -2, -length(function_text))], collapse =";")
-                         , "}", collapse = "")
-  strict0 <- function(f1, pos=2) eval(substitute(f1), as.environment(pos))
+  function_text <- paste(function_text[1], function_text[2],
+    paste(function_text[c(-1, -2, -length(function_text))], collapse = ";"),
+    "}",
+    collapse = ""
+  )
+  strict0 <- function(f1, pos = 2) eval(substitute(f1), as.environment(pos))
   f1 <- eval(parse(text = paste0("strict0(", function_text, ")")))
-  do.call(f1,list(...))
+  do.call(f1, list(...))
 }
 
 

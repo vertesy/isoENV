@@ -13,7 +13,11 @@
 )
 }
 \arguments{
-\item{packages}{A character vector of package names.}
+\item{std_packages}{A character vector of standard packages to search through for functions.}
+
+\item{custom_packages}{A character vector of custom packages to search through for functions.}
+
+\item{other_packages}{A character vector of other packages to search through for functions.}
 }
 \value{
 A list where each element is a character vector of function names for the corresponding package.

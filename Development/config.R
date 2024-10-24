@@ -1,15 +1,15 @@
 # Configuration for the Package
-# file.edit("~/GitHub/Packages/XXXXXXXXXX/Development/config.R")
+# file.edit("~/GitHub/Packages/isoENV/Development/config.R")
 
 DESCRIPTION <- list(
   package.name = "isoENV",
-  version = "0.2.0",
+  version = "0.3.0",
   title = "Tools to work with isolated environments for in-memory pipelines in R.",
   description = "isoENV is a set of R functions to invoke scripts in isolated, and controlled environments for
     in-memory pipelines in R. Useful for single-session pipelines and exploratory data analysis.",
 
   depends = "Stringendo, checkmate",
-  imports = "sessioninfo, stats",
+  imports = "sessioninfo, stats, tictoc",
   suggests = "",
 
   author.given = "Abel",

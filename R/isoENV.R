@@ -159,7 +159,8 @@ sourceClean <- function(
   print(paste("output.variables", output.variables))
   output.variables.existing <- checkVars(output.variables,
     envir = myEnv, verbose = TRUE,
-    x = 2, prefix = "Problematic OUTPUT!\n"
+    # x = 2,
+    prefix = "Problematic OUTPUT!\n"
   )
   missing <- setdiff(output.variables, output.variables.existing)
   if (length(missing > 0)) print(paste("missing", missing))

@@ -23,8 +23,8 @@
 #' @param passAllFunctions Logical; if TRUE, all global functions are passed on, otherwise only those in input.functions.
 #' @param input.functions A character vector of global function names to be passed on if passAllFunctions is FALSE.
 #' @param returnEnv Logical; if TRUE, assigns the script environment to the global environment.
-#' @param removeBigObjs Logical; if TRUE, cleans the script environment from big objects, and return the remaing env to the global environment.
-#' @param max.size a numeric value specifying the maximum size of an objects to keep in the env, in bytes. Default =1e6 (1MB).
+#' @param removeBigObjs Logical; if TRUE, cleans the script environment from big objects and returns the remaining environment to the global environment.
+#' @param max.size a numeric value specifying the maximum size of an object to keep in the env, in bytes. Default =1e6 (1MB).
 #' @param ... Arguments to pass on to source()
 #' @return No return value, the function returns variables into the .GlobalEnv.
 #' @export
@@ -66,7 +66,7 @@ sourceClean <- function(
     )
   }
 
-  # Create new environment that does not see .GlobalEnv (not it's parent)/
+  # Create a new environment that does not see .GlobalEnv (not its parent)
   myEnv <- new.env(parent = baseenv())
 
   # Copy specified global variables to myEnv

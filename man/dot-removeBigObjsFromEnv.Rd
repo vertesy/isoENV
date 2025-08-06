@@ -9,7 +9,7 @@
 \arguments{
 \item{env}{an environment from which large objects should be removed.}
 
-\item{max.size}{a numeric value specifying the maximum size of an objects to keep in the env, in bytes.}
+\item{max.size}{a numeric value specifying the maximum size of an object to keep in the env, in bytes.}
 }
 \value{
 The modified environment with large objects removed.

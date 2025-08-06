@@ -30,8 +30,8 @@
 #' @param packages.load Additional custom packages to load into the script's namespace.
 #' @param returnEnv Logical; if TRUE, assigns the script environment to the global environment.
 #' @param removeBigObjs Logical; if TRUE, cleans the script environment from big objects, and
-#' return the remaing env to the global environment.
-#' @param max.size a numeric value specifying the maximum size of an objects to keep in the env,
+#' returns the remaining environment to the global environment.
+#' @param max.size a numeric value specifying the maximum size of an object to keep in the env,
 #' in bytes. Default =1e6 (1MB).
 #' @param ... Arguments to pass on to source()
 #' @return No return value, the function returns variables into the .GlobalEnv.
@@ -95,7 +95,7 @@ sourceClean <- function(
     )
   }
 
-  # Create new environment that do,es not see .GlobalEnv (not it's parent).
+  # Create a new environment that does not see .GlobalEnv (not its parent).
   myEnv <- new.env(parent = baseenv())
 
   # Copy specified global variables to myEnv
@@ -330,7 +330,7 @@ checkVars <- function(
 #'
 #' @description This function removes objects from the specified environment that exceed a certain size.
 #' @param env an environment from which large objects should be removed.
-#' @param max.size a numeric value specifying the maximum size of an objects to keep in the env, in bytes.
+#' @param max.size a numeric value specifying the maximum size of an object to keep in the env, in bytes.
 #' @return The modified environment with large objects removed.
 #' @examples
 #' env <- new.env()

@@ -45,6 +45,7 @@
 #'
 #' @export
 removeAllExceptFunctions <- function(envir = .GlobalEnv) {
+  stopifnot(is.environment(envir))
   to_remove <- setdiff(ls(envir = envir), lsf.str(envir = envir))
   rm(list = to_remove, envir = envir)
 }

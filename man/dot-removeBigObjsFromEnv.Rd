@@ -24,6 +24,6 @@ env$b <- 1
 # Get the names and sizes of the objects in env
 obj_names <- ls(envir = env)
 obj_sizes <- sapply(obj_names, function(x) object.size(get(x, envir = env)))
-env <- removeBigObjsFromEnv(env, max.size = 1e6)
+env <- .removeBigObjsFromEnv(env, max.size = 1e6)
 ls(env) # should not include 'a'
 }

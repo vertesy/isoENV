@@ -34,7 +34,7 @@ test_that("Variables are removed from specified environment", {
   assign("fx", function() {
     TRUE
   }, envir = test_env)
-  isoENV::removeAllExceptFunctions(env = test_env)
+  isoENV::removeAllExceptFunctions(envir = test_env)
 
   expect_false(exists("a", envir = test_env))
   expect_false(exists("b", envir = test_env))

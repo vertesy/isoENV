@@ -53,7 +53,7 @@ z
 
 
 write an R function that takes a char vec of object names, and checks if they correspond to variables or functions?
-  gives warning() with the name of funcitons and return the list of variable.names()
+  gives warning() with the name of functions and returns the list of variable.names()
 use camelcase. make roxygen
 
 x <- 4

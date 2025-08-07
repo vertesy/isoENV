@@ -1,5 +1,5 @@
 # ____________________________________________________________________
-# isoENV.other.R  contains funcitons not used for now  ----
+# isoENV.other.R  contains functions not used for now  ----
 # ____________________________________________________________________
 # devtools::load_all("~/GitHub/Packages/isoENV"); devtools::document("~/GitHub/Packages/isoENV")
 # try(source("~/GitHub/Packages/isoENV/R/isoENV.other.R"), silent = TRUE)

@@ -52,10 +52,9 @@ z
 
 
 
-# Write an R function that takes a character vector of object names and checks
-# if they correspond to variables or functions. It gives a warning with the
-# name of functions and returns the list of variable names.
-# Use camelCase. Make roxygen
+write an R function that takes a char vec of object names, and checks if they correspond to variables or functions?
+  gives warning() with the name of funcitons and return the list of variable.names()
+use camelcase. make roxygen
 
 x <- 4
 fff <- function(x) x^3

@@ -60,7 +60,7 @@ sourceClean <- function(path, input.variables, output.variables
               , '\nSkipped.\n')
   }
 
-  # Create new environment that does not see .GlobalEnv (not it's parent)/
+  # Create new environment that does not see .GlobalEnv (not its parent)/
   myEnv <- new.env(parent = baseenv())
 
   # Copy specified global variables to myEnv
@@ -150,7 +150,7 @@ sourceClean <- function(path, input.variables, output.variables
 #' @param variables A character vector of variable names to check.
 #' @param envir The environment in which to look for the variables.
 #' @param verbose Report on good (passing) variables.
-#' @param suffix Suffix to append to printed summary statment.
+#' @param suffix Suffix to append to printed summary statement.
 #' @return No return value, called for side effects.
 #' @examples
 #' myEnv <- new.env()

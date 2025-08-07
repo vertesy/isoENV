@@ -69,11 +69,16 @@ sourceClean <- function(
 
   # Argument assertions
   stopifnot(
-    is.character(path),
+    is.character(path), length(path) == 1, file.exists(path),
     is.character(input.variables),
     is.character(output.variables),
+    is.logical(passAllFunctions),
+    is.null(input.functions) || is.character(input.functions),
+    is.logical(returnEnv),
+    is.logical(removeBigObjs),
+    is.numeric(max.size), length(max.size) == 1, max.size > 0,
     "Either passAllFunctions OR give a character of fun names" =
-      isTRUE(passAllFunctions) || !is.null(input.functions) || !is.null(all.packages.load)
+      passAllFunctions || !is.null(input.functions)
   )
   script_name <- basename(path)
   input.variables <- trimws(input.variables)
@@ -224,7 +229,13 @@ checkVars <- function(
     variables, envir, verbose = FALSE,
     prefix = "Problematic variables!\n",
     suffix = NULL) {
-  stopifnot(is.character(variables), is.environment(envir))
+  stopifnot(
+    is.character(variables),
+    is.environment(envir),
+    is.logical(verbose),
+    is.null(prefix) || is.character(prefix),
+    is.null(suffix) || is.character(suffix)
+  )
   env.name <- as.character(substitute(envir))
 
   # filter out functions that should be returned!
@@ -345,8 +356,10 @@ checkVars <- function(
 
 .removeBigObjsFromEnv <- function(env, max.size = 1e6) {
   # Assertions for input arguments
-  stopifnot(is.environment(env))
-  stopifnot(is.numeric(max.size) && max.size > 0)
+  stopifnot(
+    is.environment(env),
+    is.numeric(max.size), length(max.size) == 1, max.size > 0
+  )
 
   # Get the names and sizes of the objects in env
   obj_names <- ls(envir = env)

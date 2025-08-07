@@ -85,7 +85,11 @@ sourceClean <- function(
 
   print("Checking if input.variables exist:")
   print(sapply(input.variables, exists))
-  objects.existing <- checkVars(input.variables, envir = globalenv(), prefix = "Problematic INPUT!\n", )
+  objects.existing <- checkVars(
+    input.variables,
+    envir = globalenv(),
+    prefix = "Problematic INPUT!\n"
+  )
   obj.is.function <- sapply(objects.existing, function(x) is.function(get(x, envir = .GlobalEnv)))
 
   if (any(obj.is.function)) {
@@ -163,7 +167,7 @@ sourceClean <- function(
     prefix = "Problematic OUTPUT!\n"
   )
   missing <- setdiff(output.variables, output.variables.existing)
-  if (length(missing > 0)) print(paste("missing", missing))
+  if (length(missing) > 0) print(paste("missing", missing))
   # print(paste("output.variables.existing", output.variables.existing))
 
 
@@ -236,13 +240,13 @@ checkVars <- function(
     head(variables), "...", suffix, "\n"
   )
 
-  wasProblem <- FALSE
+  # Track whether any variable triggers a warning
+  problemFound <- FALSE
   for (var in variables) {
     # cat("Checking variable:", var, "\n")
     if (!exists(var, envir = envir)) {
       warning(var, " is missing", immediate. = TRUE)
-      wasProblem <- TRUE
-      stop(paste("Variable", var, "is not found in the", env.name, "environment!"))
+      problemFound <- TRUE
     } else {
       value <- get(var, envir = envir)
       if (is.function(value)) {
@@ -250,31 +254,32 @@ checkVars <- function(
         next
       } else if (is.null(value)) {
         warning(var, " is NULL.", immediate. = TRUE)
-        wasProblem <- TRUE
+        problemFound <- TRUE
       } else if (identical(value, NA)) {
         warning(var, " is NA.", immediate. = TRUE)
-        wasProblem <- TRUE
+        problemFound <- TRUE
       } else if (length(value) == 0) {
         warning(var, " is empty.", immediate. = TRUE)
-        wasProblem <- TRUE
+        problemFound <- TRUE
       } else if (is.numeric(value) && any(is.nan(value))) {
         warning(var, " contains NaN values.", immediate. = TRUE)
-        wasProblem <- TRUE
+        problemFound <- TRUE
       } else if (is.numeric(value) && any(is.infinite(value))) {
         warning(var, " contains Inf values.", immediate. = TRUE)
-        wasProblem <- TRUE
+        problemFound <- TRUE
       } else if (verbose) {
         message(var, " is defined and not empty.")
-        wasProblem <- FALSE # no problem
       }
     }
   } # for
 
-  if (!is.null(prefix) && wasProblem) cat(as.character(prefix), fill = TRUE)
+  if (!is.null(prefix) && problemFound) {
+    # Emit the prefix once if any variable had an issue
+    cat(as.character(prefix), fill = TRUE)
+  }
 
   variables.existing <- variables[sapply(variables, exists, envir = envir)]
-  iprint()
-  print(paste(length(variables.existing), "of", length(variables), "variables exist.", collapse = " ")) #  head(variables.existing)
+  print(paste(length(variables.existing), "of", length(variables), "variables exist.", collapse = " "))
   return(variables.existing)
 }
 

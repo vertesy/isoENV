@@ -251,12 +251,12 @@ checkVars <- function(
     head(variables), "...", suffix, "\n"
   )
 
-  had_problem <- FALSE
+  problemFound <- FALSE
   for (var in variables) {
     # cat("Checking variable:", var, "\n")
     if (!exists(var, envir = envir)) {
       warning(var, " is missing", immediate. = TRUE)
-      had_problem <- TRUE
+      problemFound <- TRUE
       stop(paste("Variable", var, "is not found in the", env.name, "environment!"))
     } else {
       value <- get(var, envir = envir)
@@ -265,26 +265,26 @@ checkVars <- function(
         next
       } else if (is.null(value)) {
         warning(var, " is NULL.", immediate. = TRUE)
-        had_problem <- TRUE
+        problemFound <- TRUE
       } else if (identical(value, NA)) {
         warning(var, " is NA.", immediate. = TRUE)
-        had_problem <- TRUE
+        problemFound <- TRUE
       } else if (length(value) == 0) {
         warning(var, " is empty.", immediate. = TRUE)
-        had_problem <- TRUE
+        problemFound <- TRUE
       } else if (is.numeric(value) && any(is.nan(value))) {
         warning(var, " contains NaN values.", immediate. = TRUE)
-        had_problem <- TRUE
+        problemFound <- TRUE
       } else if (is.numeric(value) && any(is.infinite(value))) {
         warning(var, " contains Inf values.", immediate. = TRUE)
-        had_problem <- TRUE
+        problemFound <- TRUE
       } else if (verbose) {
         message(var, " is defined and not empty.")
       }
     }
   } # for
 
-  if (!is.null(prefix) && had_problem) cat(as.character(prefix), fill = TRUE)
+  if (!is.null(prefix) && problemFound) cat(as.character(prefix), fill = TRUE)
 
   variables.existing <- variables[sapply(variables, exists, envir = envir)]
   print(paste(length(variables.existing), "of", length(variables), "variables exist.", collapse = " ")) #  head(variables.existing)

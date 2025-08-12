@@ -101,10 +101,10 @@ Install directly from **GitHub** via **devtools** with one R command:
 
 # Install dependencies, e.g.:
 install.packages("checkmate")
-devtools::install_github(repo = "vertesy/Stringendo", upgrade = F)
+devtools::install_github(repo = "vertesy/Stringendo", ref = "main", upgrade = F)
 
 # Install UVI.tools
-devtools::install_github(repo = "vertesy/isoENV", upgrade = F)
+devtools::install_github(repo = "vertesy/isoENV", ref = "main", upgrade = F)
 
 ```
 

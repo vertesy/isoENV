@@ -36,3 +36,4 @@ po/*~
 rsconnect/
 .Rproj.user
 .Rproj.user/**
+.DS_Store

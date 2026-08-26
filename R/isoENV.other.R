@@ -1,5 +1,5 @@
 # ____________________________________________________________________
-# isoENV.other.R  contains funcitons not used for now  ----
+# isoENV.other.R  contains functions not used for now  ----
 # ____________________________________________________________________
 # devtools::load_all("~/GitHub/Packages/isoENV"); devtools::document("~/GitHub/Packages/isoENV")
 # try(source("~/GitHub/Packages/isoENV/R/isoENV.other.R"), silent = TRUE)
@@ -45,6 +45,7 @@
 #'
 #' @export
 removeAllExceptFunctions <- function(envir = .GlobalEnv) {
+  stopifnot(is.environment(envir))
   to_remove <- setdiff(ls(envir = envir), lsf.str(envir = envir))
   rm(list = to_remove, envir = envir)
 }

@@ -20,12 +20,12 @@
 \item{other_packages}{A character vector of other packages to search through for functions.}
 }
 \value{
-A list where each element is a character vector of function names for the corresponding package.
-Packages not loaded or non-existent are returned as \code{NULL}.
+A character vector of function names across the specified packages.
+Packages that are not loaded or do not exist are skipped.
 }
 \description{
 This function returns a list of all functions available in the specified packages.
-If a package is not loaded or does not exist, it is skipped.
+Packages that cannot be loaded are ignored.
 }
 \examples{
 # Assuming the required packages are installed and loaded

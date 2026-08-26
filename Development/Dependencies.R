@@ -1,31 +1,21 @@
-Dependency file generated on Thu Oct 24 16:31:40 2024 
+Dependency file generated on Tue Aug 25 19:13:48 2026 
 
 #################################################################################################### 
 isoENV.other.R
 #################################################################################################### 
-$`c("package:lubridate", "package:dplyr", "package:base")`
-[1] "setdiff"
-
 $`package:base`
-[1] "ls" "rm"
+[1] "ls"      "rm"      "setdiff"
 
 $`package:utils`
 [1] "lsf.str"
 
-c("lubridate", "dplyr", "base")
 base
 utils
 #################################################################################################### 
 isoENV.R
 #################################################################################################### 
-$`c("package:ggExpress", "package:UVI.tools", "package:Seurat.utils", "package:tictoc")`
+$`character(0)`
 [1] "tic" "toc"
-
-$`c("package:lubridate", "package:dplyr", "package:base")`
-[1] "setdiff" "union"  
-
-$`c("package:MarkdownHelpers", "package:Stringendo", "package:MarkdownReports", "package:Seurat.utils")`
-[1] "iprint"
 
 $`package:base`
  [1] "any"                 "as.character"        "as.environment"      "assign"             
@@ -38,10 +28,10 @@ $`package:base`
 [29] "list"                "list2env"            "ls"                  "message"            
 [33] "mget"                "names"               "Negate"              "new.env"            
 [37] "parse"               "paste"               "paste0"              "print"              
-[41] "return"              "rm"                  "sapply"              "sort"               
-[45] "source"              "stop"                "stopifnot"           "substitute"         
-[49] "trimws"              "tryCatch"            "unique"              "unlist"             
-[53] "warning"            
+[41] "return"              "rm"                  "sapply"              "setdiff"            
+[45] "sort"                "source"              "stop"                "stopifnot"          
+[49] "substitute"          "trimws"              "tryCatch"            "union"              
+[53] "unique"              "unlist"              "warning"            
 
 $`package:checkmate`
 [1] "anyMissing"
@@ -49,13 +39,15 @@ $`package:checkmate`
 $`package:isoENV`
 [1] ".importPackageFunctions" ".removeBigObjsFromEnv"   "checkVars"              
 
+$`package:Stringendo`
+[1] "iprint"
+
 $`package:utils`
 [1] "head"        "lsf.str"     "object.size"
 
-c("ggExpress", "UVI.tools", "Seurat.utils", "tictoc")
-c("lubridate", "dplyr", "base")
-c("MarkdownHelpers", "Stringendo", "MarkdownReports", "Seurat.utils")
+character(0)
 base
 checkmate
 isoENV
+Stringendo
 utils

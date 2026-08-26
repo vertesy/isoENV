@@ -48,21 +48,22 @@
 #' )
 #' }
 sourceClean <- function(
-    path, input.variables,
-    # input.variables.default = "OutDir, OutDirOrig",
-    output.variables = input.variables,
-    passAllFunctions = FALSE, input.functions = NULL,
-    packages.load = c("Seurat"),
-    packages.load.default = c(
-      "utils", "grDevices", "graphics", "stats", "methods",
-      "ggplot2",
-      "Stringendo", "ReadWriter", "CodeAndRoll2", "MarkdownHelpers",
-      "MarkdownReports", "ggExpress", "Seurat.utils", "isoENV", "UVI.tools",
-      "Connectome.tools", "NestedMultiplexer"
-    ),
-    # packages.library = NULL,
-    returnEnv = TRUE, removeBigObjs = TRUE, max.size = 1e6,
-    ...) {
+  path, input.variables,
+  # input.variables.default = "OutDir, OutDirOrig",
+  output.variables = input.variables,
+  passAllFunctions = FALSE, input.functions = NULL,
+  packages.load = c("Seurat"),
+  packages.load.default = c(
+    "utils", "grDevices", "graphics", "stats", "methods",
+    "ggplot2",
+    "Stringendo", "ReadWriter", "CodeAndRoll2", "MarkdownHelpers",
+    "MarkdownReports", "ggExpress", "Seurat.utils", "isoENV", "UVI.tools",
+    "Connectome.tools", "NestedMultiplexer"
+  ),
+  # packages.library = NULL,
+  returnEnv = TRUE, removeBigObjs = TRUE, max.size = 1e6,
+  ...
+) {
   tictoc::tic()
 
   all.packages.load <- union(packages.load.default, packages.load)
@@ -192,7 +193,6 @@ sourceClean <- function(
   tictoc::toc()
   # return(myEnv)
 }
-
 
 
 # ______________________________________________________________________________________________----
@@ -337,7 +337,6 @@ checkVars <- function(
 }
 
 
-
 # ____________________________________________________________________
 #' @title Remove large objects from an environment
 #'
@@ -392,7 +391,6 @@ checkVars <- function(
 }
 
 
-
 # ____________________________________________________________________
 #' @title Find Functions in Specified Packages
 #'
@@ -412,13 +410,14 @@ checkVars <- function(
 #' @export
 
 .findFunctions <- function(
-    std_packages = c("ggplot"),
-    custom_packages = c(
-      "Stringendo", "ReadWriter", "CodeAndRoll2", "MarkdownHelpers",
-      "MarkdownReports", "Seurat.utils", "isoENV", "UVI.tools",
-      "Connectome.tools", "NestedMultiplexer"
-    ),
-    other_packages = NULL) {
+  std_packages = c("ggplot"),
+  custom_packages = c(
+    "Stringendo", "ReadWriter", "CodeAndRoll2", "MarkdownHelpers",
+    "MarkdownReports", "Seurat.utils", "isoENV", "UVI.tools",
+    "Connectome.tools", "NestedMultiplexer"
+  ),
+  other_packages = NULL
+) {
   stopifnot(
     is.character(std_packages),
     is.character(custom_packages),
@@ -459,10 +458,9 @@ checkVars <- function(
 #' @noRd
 #'
 .importPackageFunctions <- function(pkg, env) {
-
   stopifnot(
-    is.character(pkg) && length(pkg) == 1,  # 'pkg' must be a single string
-    is.environment(env)                     # 'env' must be an environment
+    is.character(pkg) && length(pkg) == 1, # 'pkg' must be a single string
+    is.environment(env) # 'env' must be an environment
   )
 
   # Get the namespace and all exported objects from the package
@@ -520,11 +518,6 @@ strict <- function(f1, ...) {
   f1 <- eval(parse(text = paste0("strict0(", function_text, ")")))
   do.call(f1, list(...))
 }
-
-
-
-
-
 
 
 # ____________________________________________________________________

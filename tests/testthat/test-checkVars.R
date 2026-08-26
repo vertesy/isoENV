@@ -59,5 +59,4 @@ test_that("checkVars issues warnings appropriately", {
 print("")
 
 
-
 # rm('test_env')

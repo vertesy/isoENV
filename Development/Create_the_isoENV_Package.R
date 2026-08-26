@@ -98,4 +98,5 @@ for (scriptX in ls.scripts.full.path) {
 
 
 
+PackageTools::document_and_create_package(repository.dir, config_file = 'config.R')
 

@@ -21,7 +21,7 @@ This is useful when with large objects (such as single-cell objects), by avoidin
 
 Bioinformatics workflows are traditionally split into two paradigms: the classic pipeline and the interactive session. 
 
-The classic bioinformatics pipeline calls tools after each other with clearly defined file inputs and parameters. This can be via a mother-bash file, or pipeline managers like snakeMake or NextFlow. 
+The classic bioinformatics pipeline calls tools after each other with clearly defined file inputs and parameters. This can be via a mother-bash file, or pipeline managers like Snakemake or NextFlow. 
 
 ```shell
 # mother.script.sh
@@ -32,7 +32,7 @@ tool3 -in=OutPut2 -p=Parameters3 -out=OutPut3
 # ... etc
 ```
 
-The other typical case is a completely funcionalized pipeline in an interactive session. `Seurat` for single-cell analysis is a typical example. It relies on each step written as a function.
+The other typical case is a completely functionalized pipeline in an interactive session. `Seurat` for single-cell analysis is a typical example. It relies on each step written as a function.
 
 ```R
 # interactive.analysis.R

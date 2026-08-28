@@ -33,14 +33,14 @@ Do not flag formatting, line length, or missing tests.
 
 ### 3. Update the Source, Not Just the Documentation
 
-Documentation is generated from upstream sources: `.Rd` files from roxygen annotations and `DESCRIPTION` from `Development/Dependencies.R` via `config.R`.
+Documentation is generated from upstream sources: `.Rd` files from roxygen annotations and `DESCRIPTION` from `Development/config.R`. `Development/Dependencies.R` is a generated dependency report.
 
 Package rebuilds overwrite these files, so always update the upstream source first, then regenerate the documentation.
 
 ## II: Repos of R function libraries
 
 - New arguments go at the end, just before `...`. Never insert in the middle.
-- Do not use tests.
+- Do not use tests, except in repos such as isoENV that already maintain a test suite.
 - Whenever you are implementing a larger change (a bug fix, a substantial code change), you shoud increase the version number in `Development/config.R` by 0.0.1.
 
 ## III: isoENV specific

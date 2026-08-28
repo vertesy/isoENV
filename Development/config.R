@@ -8,7 +8,7 @@ DESCRIPTION <- list(
   description = "isoENV is a set of R functions to invoke scripts in isolated, and controlled environments for
     in-memory pipelines in R. Useful for single-session pipelines and exploratory data analysis.",
 
-  depends = "Stringendo, checkmate",
+  depends = "checkmate",
   imports = "sessioninfo, stats, tictoc",
   suggests = "",
 
@@ -18,4 +18,3 @@ DESCRIPTION <- list(
   github.user = "vertesy",
   license = "GPL-3 + file LICENSE"
 )
-

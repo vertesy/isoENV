@@ -10,8 +10,7 @@ Description: isoENV is a set of R functions to invoke scripts in isolated,
 License: GPL-3 + file LICENSE
 BugReports: https://github.com/vertesy/isoENV/issues
 Depends: 
-    checkmate,
-    Stringendo
+    checkmate
 Imports: 
     sessioninfo,
     stats,

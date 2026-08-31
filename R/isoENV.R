@@ -90,7 +90,8 @@ sourceClean <- function(
   # . Input Variables ----
 
   # Confirm the requested input.variables actually exist in .GlobalEnv, and
-  # split out any that are functions -- those belong in input.functions instead.
+  # flag any that are functions -- input.functions is the proper channel for
+  # those, but this only warns: they are still copied into myEnv below.
   print("Checking if input.variables exist:")
   print(sapply(input.variables, exists))
   objects.existing <- checkVars(input.variables, envir = globalenv(), prefix = "Problematic INPUT!\n")
@@ -99,7 +100,7 @@ sourceClean <- function(
   if (any(obj.is.function)) {
     xm <- cat(
       "FUNCTIONS passed to input.variables:", objects.existing[obj.is.function],
-      "\nSkipped.\n"
+      "\nShould be passed via input.functions instead; copying them as-is for now.\n"
     )
   }
 
@@ -518,9 +519,11 @@ checkVars <- function(
 #' strict(funOKwoParenthesis, 1, 2)
 strict <- function(f1, ...) {
   # Rebuild f1's source as a single-line string, then re-parse/eval it wrapped
-  # in strict0(): this forces its default/free-variable lookups to resolve
-  # eagerly in the caller's frame, instead of lazily wherever f1 is finally
-  # called -- surfacing "undefined variable" errors immediately.
+  # in strict0(): eval()-ing a function *definition* re-points its enclosing
+  # environment to as.environment(2) (the 2nd entry on the search() path)
+  # instead of .GlobalEnv, so any default/free variable that used to resolve
+  # via .GlobalEnv now fails with "object not found" as soon as f1 runs --
+  # surfacing hidden dependencies on global variables.
   function_text <- deparse(f1)
   function_text <- paste(function_text[1], function_text[2],
     paste(function_text[c(-1, -2, -length(function_text))], collapse = ";"),

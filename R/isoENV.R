@@ -89,6 +89,9 @@ sourceClean <- function(
   # ________________________________________________________________________________________________
   # . Input Variables ----
 
+  # Confirm the requested input.variables actually exist in .GlobalEnv, and
+  # flag any that are functions -- input.functions is the proper channel for
+  # those, but this only warns: they are still copied into myEnv below.
   print("Checking if input.variables exist:")
   print(sapply(input.variables, exists))
   objects.existing <- checkVars(input.variables, envir = globalenv(), prefix = "Problematic INPUT!\n")
@@ -97,11 +100,12 @@ sourceClean <- function(
   if (any(obj.is.function)) {
     xm <- cat(
       "FUNCTIONS passed to input.variables:", objects.existing[obj.is.function],
-      "\nSkipped.\n"
+      "\nShould be passed via input.functions instead; copying them as-is for now.\n"
     )
   }
 
-  # Create a new environment that does not see .GlobalEnv (not its parent).
+  # Isolate: myEnv's parent is baseenv(), not .GlobalEnv, so lookups inside it
+  # can't accidentally fall through to the caller's global variables/functions.
   myEnv <- new.env(parent = baseenv())
 
   # Copy specified global variables to myEnv
@@ -128,7 +132,8 @@ sourceClean <- function(
     print(paste(length(input.functions), "input.functions"))
   }
 
-  # Load the package into the specified environment
+  # Import each package's functions directly into myEnv (not via library()),
+  # so myEnv gains them without attaching anything to the real search path.
   if (length(all.packages.load)) {
     for (pkg in all.packages.load) {
       if (requireNamespace(pkg, quietly = TRUE)) {
@@ -139,7 +144,7 @@ sourceClean <- function(
     }
   }
 
-  # Get functions to copy
+  # Get functions to copy (functions2pass stays NULL if neither option applies)
   functions2pass <-
     if (passAllFunctions) {
       lsf.str(envir = .GlobalEnv)
@@ -162,7 +167,7 @@ sourceClean <- function(
 
   # ________________________________________________________________________________________________
   # . Output Functions ----
-  "Output Functions are not checked atm."
+  # NOTE: Output Functions are not checked atm.
 
   # ________________________________________________________________________________________________
   # . Output Variables ----
@@ -184,6 +189,8 @@ sourceClean <- function(
   list2env(varsOut, envir = .GlobalEnv)
 
   if (returnEnv) {
+    # Keep the whole script environment around under a predictable name, so
+    # it can be inspected later without re-running the script.
     env.name <- paste0(".env.", script_name)
     if (removeBigObjs) myEnv <- .removeBigObjsFromEnv(myEnv, max.size = max.size)
 
@@ -251,6 +258,7 @@ checkVars <- function(
     head(variables), "...", suffix, "\n"
   )
 
+  # Flag anything missing, NULL, NA, empty, NaN, or infinite; functions are skipped.
   problemFound <- FALSE
   for (var in variables) {
     # cat("Checking variable:", var, "\n")
@@ -426,6 +434,8 @@ checkVars <- function(
   packages <- sort(unique(do.call(c, list(std_packages, custom_packages, other_packages))))
   print(paste(length(packages), "packages are searched..."))
 
+  # List every function defined in each package's namespace; packages that
+  # aren't installed/loaded are silently skipped rather than erroring out.
   funs <- unlist(sapply(packages, function(pkg) {
     ns <- tryCatch(getNamespace(pkg), error = function(e) NULL)
     if (!is.null(ns)) {
@@ -508,6 +518,12 @@ checkVars <- function(
 #' strict(funBAD, 1, 2)
 #' strict(funOKwoParenthesis, 1, 2)
 strict <- function(f1, ...) {
+  # Rebuild f1's source as a single-line string, then re-parse/eval it wrapped
+  # in strict0(): eval()-ing a function *definition* re-points its enclosing
+  # environment to as.environment(2) (the 2nd entry on the search() path)
+  # instead of .GlobalEnv, so any default/free variable that used to resolve
+  # via .GlobalEnv now fails with "object not found" as soon as f1 runs --
+  # surfacing hidden dependencies on global variables.
   function_text <- deparse(f1)
   function_text <- paste(function_text[1], function_text[2],
     paste(function_text[c(-1, -2, -length(function_text))], collapse = ";"),

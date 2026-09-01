@@ -56,9 +56,6 @@ checkres <- devtools::check(repository.dir, cran = FALSE)
 
 
 
-# Automated Codebase linting to tidyverse style ------------------------------------------------
-styler::style_pkg(repository.dir)
-
 
 # Extract package dependencies ------------------------------------------------
 PackageTools::extract_package_dependencies(repository.dir)
@@ -103,14 +100,6 @@ file.remove(list.files(file.path(repository.dir, "R"), pattern = "^list\\.of\\.f
 r$PackageTools()
 PackageTools::copy_github_badge("experimental") # Add badge to readme via clipboard
 file.edit(paste0(repository.dir, "README.md"))
-
-
-# Replaces T with TRUE and F with FALSE ------------------------------------------------
-(ls.scripts.full.path <- list.files(file.path(repository.dir, "R"), full.names = T, pattern = '.R$'))
-for (scriptX in ls.scripts.full.path) {
-  PackageTools::replace_tf_with_true_false(scriptX)
-  PackageTools::replace_short_calls(scriptX)
-}
 
 
 

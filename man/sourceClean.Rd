@@ -40,7 +40,7 @@ those in input.functions.}
 
 \item{returnEnv}{Logical; if TRUE, assigns the script environment to the global environment.}
 
-\item{removeBigObjs}{Logical; if TRUE, cleans the script environment from big objects and
+\item{removeBigObjs}{Logical; if TRUE, cleans the script environment from big objects, and
 returns the remaining environment to the global environment.}
 
 \item{max.size}{a numeric value specifying the maximum size of an object to keep in the env,

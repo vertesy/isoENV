@@ -237,9 +237,10 @@ sourceClean <- function(
 #' checkVars(output.variables, envir = myEnv)
 #' @export
 checkVars <- function(
-    variables, envir, verbose = FALSE,
-    prefix = "Problematic variables!\n",
-    suffix = NULL) {
+  variables, envir, verbose = FALSE,
+  prefix = "Problematic variables!\n",
+  suffix = NULL
+) {
   stopifnot(
     is.character(variables),
     is.environment(envir),

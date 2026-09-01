@@ -1,7 +1,7 @@
 Package: isoENV
 Title: Tools to work with isolated environments for in-memory pipelines in
     R.
-Version: 0.3.5
+Version: 0.3.6
 Authors@R: 
     person("Abel", "Vertesy", , "av@imba.oeaw.ac.at", role = c("aut", "cre"))
 Description: isoENV is a set of R functions to invoke scripts in isolated,
@@ -16,6 +16,6 @@ Imports:
     stats,
     tictoc
 Encoding: UTF-8
-Packaged: 2026-08-25 19:30:31.955395
+Packaged: 2026-09-01 13:50:26.305532
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2

@@ -3,7 +3,7 @@
 
 DESCRIPTION <- list(
   package.name = "isoENV",
-  version = "0.3.5",
+  version = "0.3.6",
   title = "Tools to work with isolated environments for in-memory pipelines in R.",
   description = "isoENV is a set of R functions to invoke scripts in isolated, and controlled environments for
     in-memory pipelines in R. Useful for single-session pipelines and exploratory data analysis.",

@@ -25,7 +25,7 @@ Packages that are not loaded or do not exist are skipped.
 }
 \description{
 This function returns a list of all functions available in the specified packages.
-Packages that cannot be loaded are ignored.
+If a package is not loaded or does not exist, it is skipped.
 }
 \examples{
 # Assuming the required packages are installed and loaded

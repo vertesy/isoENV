@@ -17,14 +17,29 @@ config.path <- file.path(repository.dir, "Development/config.R")
 file.edit(config.path)
 source(config.path)
 
+# Check and Document your package ------------------------------------------------
+devtools::check_man(repository.dir)
 PackageTools::document_and_create_package(repository.dir, config_file = 'config.R')
-'git add commit push to remote'
+
+
+# Automated Codebase linting to tidyverse style ------------------------------------------------
+styler::style_pkg(repository.dir)
+
+
+# Replace shorthands, and short function aliases (e.g.: T with TRUE, dfilter with dplyr::filter) ------------------------------------------------
+(ls.scripts.full.path <- list.files(file.path(repository.dir, "R"), full.names = T, pattern = '.R$'))
+for (scriptX in ls.scripts.full.path) {
+  PackageTools::replace_tf_with_true_false(scriptX)
+  PackageTools::replace_short_calls(scriptX)
+}
+
 
 
 # Install your package ------------------------------------------------
 "disable rprofile by"
 rprofile()
-devtools::install_local(repository.dir, upgrade = F)
+devtools::install_local(repository.dir, upgrade = F, force = T)
+
 
 
 # Test if you can install from github ------------------------------------------------
@@ -40,9 +55,6 @@ devtools::check_man(repository.dir)
 checkres <- devtools::check(repository.dir, cran = FALSE)
 
 
-
-# Automated Codebase linting to tidyverse style ------------------------------------------------
-styler::style_pkg(repository.dir)
 
 
 # Extract package dependencies ------------------------------------------------
@@ -88,14 +100,6 @@ file.remove(list.files(file.path(repository.dir, "R"), pattern = "^list\\.of\\.f
 r$PackageTools()
 PackageTools::copy_github_badge("experimental") # Add badge to readme via clipboard
 file.edit(paste0(repository.dir, "README.md"))
-
-
-# Replaces T with TRUE and F with FALSE ------------------------------------------------
-(ls.scripts.full.path <- list.files(file.path(repository.dir, "R"), full.names = T, pattern = '.R$'))
-for (scriptX in ls.scripts.full.path) {
-  PackageTools::replace_tf_with_true_false(scriptX)
-  PackageTools::replace_short_calls(scriptX)
-}
 
 
 
